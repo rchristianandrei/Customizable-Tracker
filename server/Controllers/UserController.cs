@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using server.Data;
-using server.Dtos.User;
+using server.Dtos.Auth;
 using server.Models;
 using server.Services;
 
@@ -29,7 +29,7 @@ public class UserController(ApplicationDbContext _context, AuthService _authServ
     }
 
     [HttpPost]
-    public async Task<IActionResult> Post([FromBody] CreateUserDto value)
+    public async Task<IActionResult> Post([FromBody] RegisterUserDto value)
     {
         var user = new User
         {
