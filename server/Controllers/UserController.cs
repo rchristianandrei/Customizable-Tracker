@@ -1,12 +1,15 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using server.Data;
+using server.Dtos.User;
+using server.Models;
+using server.Services;
 
 namespace server.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-public class UserController(ApplicationDbContext _context) : ControllerBase
+public class UserController(ApplicationDbContext _context, AuthService _authService) : ControllerBase
 {
     [HttpGet]
     public async Task<IActionResult> Get()
@@ -15,24 +18,49 @@ public class UserController(ApplicationDbContext _context) : ControllerBase
         return Ok(users);
     }
 
-    [HttpGet("{id}")]
-    public string Get(int id)
+    [HttpGet("{email}")]
+    public async Task<IActionResult> Get(string email)
     {
-        return "value";
+        var user = await _context.Users.FindAsync(email);
+        
+        if(user == null) return NotFound();
+
+        return Ok(user);
     }
 
     [HttpPost]
-    public void Post([FromBody] string value)
+    public async Task<IActionResult> Post([FromBody] CreateUserDto value)
     {
+        var user = new User
+        {
+            Email = value.Email,
+            FirstName = value.FirstName,
+            LastName = value.LastName,
+        };
+
+        _authService.CreateUser(user, value.Password);
+
+        await _context.Users.AddAsync(user);
+        await _context.SaveChangesAsync();
+
+        return Ok();
     }
 
-    [HttpPut("{id}")]
-    public void Put(int id, [FromBody] string value)
-    {
-    }
+    //[HttpPut("{id}")]
+    //public void Put(int id, [FromBody] string value)
+    //{
+    //}
 
-    [HttpDelete("{id}")]
-    public void Delete(int id)
+    [HttpDelete("{email}")]
+    public async Task<IActionResult> Delete(string email)
     {
+        var user = await _context.Users.FindAsync(email);
+
+        if (user == null) return NotFound();
+
+        _context.Users.Remove(user);
+        await _context.SaveChangesAsync();
+
+        return NoContent();
     }
 }
