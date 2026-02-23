@@ -1,7 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using DotNetEnv;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using server.Data;
 using server.Dtos.Auth;
 using server.Interfaces;
+using server.Mappers;
 using server.Models;
 using server.Services;
 using server.Settings;
@@ -17,6 +20,22 @@ public class AuthController(
     JwtSettings _jwtSettings
     ) : ControllerBase
 {
+    [Authorize]
+    [HttpGet("me")]
+    public async Task<IActionResult> GetCredentials()
+    {
+        var email = User.FindFirst(System.Security.Claims.ClaimTypes.Email)?.Value;
+
+        if (email == null) return BadRequest("No credentials found");
+
+        var user = await _context.Users.FindAsync(email);
+
+        if (user == null)
+            return Unauthorized("Invalid Credentials");
+
+        return Ok(user.ToAuthDto());
+    }
+
     [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] LoginUserDto value)
     {
@@ -38,7 +57,7 @@ public class AuthController(
             Expires = DateTime.UtcNow.AddMinutes(Convert.ToInt32(_jwtSettings.ExpireMinutes))
         });
 
-        return Ok(new AuthDto { Email = user.Email, FirstName = user.FirstName, LastName = user.LastName });
+        return Ok(user.ToAuthDto());
     }
 
     [HttpPost("register")]
