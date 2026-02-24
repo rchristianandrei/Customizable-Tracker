@@ -1,5 +1,7 @@
+import { useNavigate } from "react-router-dom";
 import { RegisterForm } from "./RegisterForm";
 
 export const Register = () => {
-  return <RegisterForm></RegisterForm>;
+  const navigate = useNavigate();
+  return <RegisterForm onLogin={() => navigate("/login")}></RegisterForm>;
 };

@@ -1,5 +1,8 @@
-import { LoginForm } from "../dashboard/LoginForm";
+import { useNavigate } from "react-router-dom";
+import { LoginForm } from "./LoginForm";
 
 export const Login = () => {
-  return <LoginForm></LoginForm>;
+  const navigate = useNavigate();
+
+  return <LoginForm onRegister={() => navigate("/register")}></LoginForm>;
 };

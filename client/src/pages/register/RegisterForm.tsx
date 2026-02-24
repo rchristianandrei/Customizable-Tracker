@@ -1,4 +1,3 @@
-import * as React from "react";
 import { useState } from "react";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
 
@@ -12,8 +11,17 @@ import {
   CardTitle,
   CardDescription,
 } from "@/components/ui/card";
+import {
+  Field,
+  FieldError,
+  FieldGroup,
+  FieldLabel,
+} from "@/components/ui/field";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Progress } from "@/components/ui/progress";
+import z from "zod";
+import { Controller, useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 
 interface RegisterFormProps {
   onRegister?: (data: {
@@ -25,20 +33,68 @@ interface RegisterFormProps {
   onLogin?: () => void;
 }
 
+const formSchema = z
+  .object({
+    email: z
+      .string()
+      .min(2, {
+        message: "must be at least 2 characters.",
+      })
+      .regex(/\S+@\S+\.\S+/, {
+        message: "Invalid email address",
+      }),
+    firstName: z
+      .string()
+      .min(2, {
+        message: "must be at least 2 characters",
+      })
+      .max(100, {
+        message: "must be at most 100 characters",
+      }),
+    lastName: z
+      .string()
+      .min(2, {
+        message: "must be at least 2 characters",
+      })
+      .max(100, {
+        message: "must be at most 100 characters",
+      }),
+    password: z
+      .string()
+      .min(2, {
+        message: "must be at least 2 characters.",
+      })
+      .max(20, {
+        message: "must be at most 20 characters",
+      }),
+    confirmPassword: z.string(),
+    terms: z.boolean().refine((val) => val === true, {
+      message: "You must accept the terms and conditions",
+    }),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords do not match",
+    path: ["confirmPassword"],
+  });
+
 export function RegisterForm({ onRegister, onLogin }: RegisterFormProps) {
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [acceptedTerms, setAcceptedTerms] = useState(false);
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      email: "",
+      firstName: "",
+      lastName: "",
+      password: "",
+      confirmPassword: "",
+      terms: false,
+    },
+    mode: "onSubmit",
+  });
 
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
-  // Simple password strength logic
-  const getPasswordStrength = () => {
+  const getPasswordStrength = (password: string) => {
     let score = 0;
     if (password.length >= 8) score++;
     if (/[A-Z]/.test(password)) score++;
@@ -47,44 +103,13 @@ export function RegisterForm({ onRegister, onLogin }: RegisterFormProps) {
     return (score / 4) * 100;
   };
 
-  const validate = () => {
-    if (!firstName) return "First name is required";
-    if (!lastName) return "Last name is required";
-    if (!email) return "Email is required";
-    if (!/\S+@\S+\.\S+/.test(email)) return "Invalid email address";
-    if (!password) return "Password is required";
-    if (password.length < 8) return "Password must be at least 8 characters";
-    if (password !== confirmPassword) return "Passwords do not match";
-    if (!acceptedTerms) return "You must accept the terms and privacy policy";
-    return null;
+  const onSubmit = (data: z.infer<typeof formSchema>) => {
+    if (loading) return;
+    setLoading(true);
+    onRegister?.(data);
+    console.log(data);
+    // setLoading(false);
   };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError(null);
-
-    const validationError = validate();
-    if (validationError) {
-      setError(validationError);
-      return;
-    }
-
-    try {
-      setLoading(true);
-      await onRegister?.({
-        firstName,
-        lastName,
-        email,
-        password,
-      });
-    } catch {
-      setError("Registration failed. Please try again.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const passwordStrength = getPasswordStrength();
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-muted/40 p-4">
@@ -97,115 +122,203 @@ export function RegisterForm({ onRegister, onLogin }: RegisterFormProps) {
         </CardHeader>
 
         <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-5">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             {/* Name Fields */}
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="firstName">First Name</Label>
-                <Input
-                  id="firstName"
-                  value={firstName}
-                  onChange={(e) => setFirstName(e.target.value)}
-                  disabled={loading}
-                />
-              </div>
+            <FieldGroup className="grid grid-cols-2 gap-4">
+              <Controller
+                name="firstName"
+                disabled={loading}
+                control={form.control}
+                render={({ field, fieldState }) => (
+                  <Field data-invalid={fieldState.invalid} className="gap-1">
+                    <FieldLabel htmlFor={field.name}>First Name</FieldLabel>
+                    <Input
+                      {...field}
+                      id={field.name}
+                      aria-invalid={fieldState.invalid}
+                      placeholder=""
+                      autoComplete="on"
+                    />
+                    {fieldState.invalid && (
+                      <FieldError errors={[fieldState.error]} />
+                    )}
+                  </Field>
+                )}
+              />
 
-              <div className="space-y-2">
-                <Label htmlFor="lastName">Last Name</Label>
-                <Input
-                  id="lastName"
-                  value={lastName}
-                  onChange={(e) => setLastName(e.target.value)}
-                  disabled={loading}
-                />
-              </div>
-            </div>
+              <Controller
+                name="lastName"
+                disabled={loading}
+                control={form.control}
+                render={({ field, fieldState }) => (
+                  <Field data-invalid={fieldState.invalid} className="gap-1">
+                    <FieldLabel htmlFor={field.name}>Last Name</FieldLabel>
+                    <Input
+                      {...field}
+                      id={field.name}
+                      aria-invalid={fieldState.invalid}
+                      placeholder=""
+                      autoComplete="on"
+                    />
+                    {fieldState.invalid && (
+                      <FieldError errors={[fieldState.error]} />
+                    )}
+                  </Field>
+                )}
+              />
+            </FieldGroup>
 
             {/* Email */}
-            <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="you@example.com"
-                autoComplete="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+            <FieldGroup className="">
+              <Controller
+                name="email"
                 disabled={loading}
+                control={form.control}
+                render={({ field, fieldState }) => (
+                  <Field data-invalid={fieldState.invalid} className="gap-1">
+                    <FieldLabel htmlFor={field.name}>Email</FieldLabel>
+                    <Input
+                      {...field}
+                      id={field.name}
+                      aria-invalid={fieldState.invalid}
+                      placeholder="you@example.com"
+                      autoComplete="on"
+                    />
+                    {/* <FieldDescription>
+                      Please enter your email address.
+                    </FieldDescription> */}
+                    {fieldState.invalid && (
+                      <FieldError errors={[fieldState.error]} />
+                    )}
+                  </Field>
+                )}
               />
-            </div>
+            </FieldGroup>
 
             {/* Password */}
-            <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
+            <FieldGroup className="">
+              <Controller
+                name="password"
+                control={form.control}
+                render={({ field, fieldState }) => {
+                  const passwordStrength = getPasswordStrength(field.value);
+                  const showStrength = field.value?.length > 0;
 
-              <div className="relative">
-                <Input
-                  id="password"
-                  type={showPassword ? "text" : "password"}
-                  autoComplete="new-password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  disabled={loading}
-                />
+                  return (
+                    <Field data-invalid={fieldState.invalid} className="gap-1">
+                      <FieldLabel htmlFor="password">Password</FieldLabel>
 
-                <button
-                  type="button"
-                  onClick={() => setShowPassword((prev) => !prev)}
-                  className="absolute inset-y-0 right-3 flex items-center text-muted-foreground"
-                >
-                  {showPassword ? (
-                    <EyeOff className="h-4 w-4" />
-                  ) : (
-                    <Eye className="h-4 w-4" />
-                  )}
-                </button>
-              </div>
+                      <div className="relative">
+                        <Input
+                          id="password"
+                          type={showPassword ? "text" : "password"}
+                          autoComplete="new-password"
+                          disabled={loading}
+                          {...field}
+                        />
 
-              {password && (
-                <Progress value={passwordStrength} className="h-2" />
-              )}
-            </div>
+                        <button
+                          type="button"
+                          disabled={loading}
+                          tabIndex={-1}
+                          onClick={() => setShowPassword((prev) => !prev)}
+                          className="absolute inset-y-0 right-3 flex items-center text-muted-foreground"
+                        >
+                          {showPassword ? (
+                            <EyeOff className="h-4 w-4" />
+                          ) : (
+                            <Eye className="h-4 w-4" />
+                          )}
+                        </button>
+                      </div>
+
+                      {showStrength && (
+                        <Progress value={passwordStrength} className="h-2" />
+                      )}
+
+                      {fieldState.invalid && (
+                        <FieldError errors={[fieldState.error]} />
+                      )}
+                    </Field>
+                  );
+                }}
+              />
+            </FieldGroup>
 
             {/* Confirm Password */}
-            <div className="space-y-2">
-              <Label htmlFor="confirmPassword">Confirm Password</Label>
-              <Input
-                id="confirmPassword"
-                type="password"
-                autoComplete="new-password"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
+            <FieldGroup className="">
+              <Controller
+                name="confirmPassword"
                 disabled={loading}
+                control={form.control}
+                render={({ field, fieldState }) => (
+                  <Field data-invalid={fieldState.invalid} className="gap-1">
+                    <FieldLabel htmlFor={field.name}>
+                      Confirm Password
+                    </FieldLabel>
+                    <Input
+                      {...field}
+                      id={field.name}
+                      aria-invalid={fieldState.invalid}
+                      placeholder=""
+                      autoComplete="off"
+                      type="password"
+                    />
+                    {fieldState.invalid && (
+                      <FieldError errors={[fieldState.error]} />
+                    )}
+                  </Field>
+                )}
               />
-            </div>
+            </FieldGroup>
 
             {/* Terms */}
-            <div className="flex items-start space-x-2">
-              <Checkbox
-                id="terms"
-                checked={acceptedTerms}
-                onCheckedChange={(checked) =>
-                  setAcceptedTerms(checked === true)
-                }
-                disabled={loading}
+            <FieldGroup className="flex-row gap-1">
+              <Controller
+                name="terms"
+                control={form.control}
+                render={({ field, fieldState }) => (
+                  <Field>
+                    <Field
+                      orientation="horizontal"
+                      data-invalid={fieldState.invalid}
+                    >
+                      <Checkbox
+                        id={field.name}
+                        name={field.name}
+                        aria-invalid={fieldState.invalid}
+                        checked={field.value}
+                        onCheckedChange={(checked) => field.onChange(checked)}
+                      />
+                      <FieldLabel className="text-sm leading-none">
+                        I agree to the{" "}
+                        <a
+                          tabIndex={-1}
+                          href="/terms"
+                          className="underline hover:text-primary"
+                        >
+                          Terms of Service
+                        </a>{" "}
+                        and{" "}
+                        <a
+                          tabIndex={-1}
+                          href="/privacy"
+                          className="underline hover:text-primary"
+                        >
+                          Privacy Policy
+                        </a>
+                      </FieldLabel>
+                    </Field>
+                    {fieldState.invalid && (
+                      <FieldError errors={[fieldState.error]} />
+                    )}
+                  </Field>
+                )}
               />
-              <Label htmlFor="terms" className="text-sm leading-none">
-                I agree to the{" "}
-                <a href="/terms" className="underline hover:text-primary">
-                  Terms of Service
-                </a>{" "}
-                and{" "}
-                <a href="/privacy" className="underline hover:text-primary">
-                  Privacy Policy
-                </a>
-              </Label>
-            </div>
-
-            {error && <p className="text-sm text-destructive">{error}</p>}
+            </FieldGroup>
 
             {/* Buttons */}
-            <div className="flex flex-col space-y-3">
+            <FieldGroup className="flex flex-col gap-2">
               <Button type="submit" disabled={loading}>
                 {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 Create Account
@@ -219,7 +332,7 @@ export function RegisterForm({ onRegister, onLogin }: RegisterFormProps) {
               >
                 Back to Login
               </Button>
-            </div>
+            </FieldGroup>
           </form>
         </CardContent>
       </Card>

@@ -9,7 +9,7 @@ export const AuthContext = createContext<
 >(undefined);
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-  const [email, setEmail] = useState<string | null>("email@example.com");
+  const [email, setEmail] = useState<string | null>(null);
   return (
     <AuthContext.Provider value={{ email, setEmail }}>
       {children}
