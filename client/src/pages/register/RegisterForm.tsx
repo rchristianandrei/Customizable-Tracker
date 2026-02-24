@@ -3,7 +3,6 @@ import { Eye, EyeOff, Loader2 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import {
   Card,
   CardContent,
@@ -37,16 +36,16 @@ const formSchema = z
   .object({
     email: z
       .string()
-      .min(2, {
-        message: "must be at least 2 characters.",
+      .min(1, {
+        message: "field is required",
       })
       .regex(/\S+@\S+\.\S+/, {
         message: "Invalid email address",
       }),
     firstName: z
       .string()
-      .min(2, {
-        message: "must be at least 2 characters",
+      .min(1, {
+        message: "field is required",
       })
       .max(100, {
         message: "must be at most 100 characters",
@@ -54,7 +53,7 @@ const formSchema = z
     lastName: z
       .string()
       .min(2, {
-        message: "must be at least 2 characters",
+        message: "field is required",
       })
       .max(100, {
         message: "must be at most 100 characters",
@@ -62,7 +61,7 @@ const formSchema = z
     password: z
       .string()
       .min(2, {
-        message: "must be at least 2 characters.",
+        message: "field is required",
       })
       .max(20, {
         message: "must be at most 20 characters",
