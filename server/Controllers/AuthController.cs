@@ -63,6 +63,10 @@ public class AuthController(
     [HttpPost("register")]
     public async Task<IActionResult> Register([FromBody] RegisterUserDto value)
     {
+        var existingUser = await _context.Users.FindAsync(value.Email);
+
+        if (existingUser != null) return BadRequest("Email already in use");
+
         var user = new User
         {
             Email = value.Email,

@@ -1,4 +1,8 @@
+import z from "zod";
+import { toast } from "sonner";
 import { useState } from "react";
+import type { AxiosResponse } from "axios";
+import { Controller, useForm } from "react-hook-form";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -18,8 +22,6 @@ import {
 } from "@/components/ui/field";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Progress } from "@/components/ui/progress";
-import z from "zod";
-import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 interface RegisterFormProps {
@@ -28,7 +30,7 @@ interface RegisterFormProps {
     lastName: string;
     email: string;
     password: string;
-  }) => Promise<void> | void;
+  }) => Promise<AxiosResponse<any, any, {}>> | void;
   onLogin?: () => void;
 }
 
@@ -92,6 +94,7 @@ export function RegisterForm({ onRegister, onLogin }: RegisterFormProps) {
 
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [onSubmitError, setOnSubmitError] = useState("");
 
   const getPasswordStrength = (password: string) => {
     let score = 0;
@@ -102,12 +105,28 @@ export function RegisterForm({ onRegister, onLogin }: RegisterFormProps) {
     return (score / 4) * 100;
   };
 
-  const onSubmit = (data: z.infer<typeof formSchema>) => {
+  const onSubmit = async (data: z.infer<typeof formSchema>) => {
     if (loading) return;
     setLoading(true);
-    onRegister?.(data);
-    console.log(data);
-    // setLoading(false);
+    setOnSubmitError("");
+
+    try {
+      await onRegister?.(data);
+      form.reset();
+      toast.success("Sucessfully Registered");
+    } catch (error: any) {
+      setOnSubmitError(() => error.response?.data ?? "Unavailable to Register");
+      toast.error("Failed to Register");
+    }
+
+    // if (success) {
+    //   form.reset();
+    //   toast.success("Sucessfully Registered");
+    // } else {
+    //   toast.error("Failed to Register");
+    // }
+
+    setLoading(false);
   };
 
   return (
@@ -315,6 +334,12 @@ export function RegisterForm({ onRegister, onLogin }: RegisterFormProps) {
                 )}
               />
             </FieldGroup>
+
+            {onSubmitError && (
+              <FieldGroup className="text-center text-sm text-red-600">
+                {onSubmitError}
+              </FieldGroup>
+            )}
 
             {/* Buttons */}
             <FieldGroup className="flex flex-col gap-2">
