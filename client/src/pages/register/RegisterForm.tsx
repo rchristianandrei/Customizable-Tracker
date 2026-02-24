@@ -1,7 +1,6 @@
 import z from "zod";
 import { toast } from "sonner";
 import { useState } from "react";
-import type { AxiosResponse } from "axios";
 import { Controller, useForm } from "react-hook-form";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
 
@@ -30,7 +29,7 @@ interface RegisterFormProps {
     lastName: string;
     email: string;
     password: string;
-  }) => Promise<AxiosResponse<any, any, {}>> | void;
+  }) => Promise<void> | void;
   onLogin?: () => void;
 }
 
@@ -118,13 +117,6 @@ export function RegisterForm({ onRegister, onLogin }: RegisterFormProps) {
       setOnSubmitError(() => error.response?.data ?? "Unavailable to Register");
       toast.error("Failed to Register");
     }
-
-    // if (success) {
-    //   form.reset();
-    //   toast.success("Sucessfully Registered");
-    // } else {
-    //   toast.error("Failed to Register");
-    // }
 
     setLoading(false);
   };

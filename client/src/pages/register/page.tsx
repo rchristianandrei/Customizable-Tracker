@@ -11,7 +11,7 @@ export const Register = () => {
     email: string;
     password: string;
   }) => {
-    return await authRepo.register(data);
+    await authRepo.register(data);
   };
 
   return (
