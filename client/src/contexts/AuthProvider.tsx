@@ -1,10 +1,11 @@
 import { authRepo } from "@/api/authRepo";
 import type { User } from "@/types/user";
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 
 export const AuthContext = createContext<
   | {
       user: User | null;
+      loading: boolean;
       login: (data: { email: string; password: string }) => Promise<void>;
     }
   | undefined
@@ -12,6 +13,20 @@ export const AuthContext = createContext<
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const onMount = async () => {
+      try {
+        const user = await authRepo.getMe();
+        setUser(user);
+      } catch (error) {
+      } finally {
+        setLoading(false);
+      }
+    };
+    onMount();
+  }, []);
 
   const login = async (data: { email: string; password: string }) => {
     const result = await authRepo.login(data);
@@ -19,7 +34,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, login }}>
+    <AuthContext.Provider value={{ user, loading, login }}>
       {children}
     </AuthContext.Provider>
   );
