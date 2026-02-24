@@ -1,10 +1,12 @@
-import * as React from "react";
+import z from "zod";
+import { toast } from "sonner";
 import { useState } from "react";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Controller, useForm } from "react-hook-form";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import {
   Card,
   CardContent,
@@ -12,53 +14,73 @@ import {
   CardTitle,
   CardDescription,
 } from "@/components/ui/card";
-import { Checkbox } from "@/components/ui/checkbox";
+import {
+  Field,
+  FieldError,
+  FieldGroup,
+  FieldLabel,
+} from "@/components/ui/field";
 
 interface LoginFormProps {
   onLogin?: (data: {
     email: string;
     password: string;
-    remember: boolean;
+    // remember: boolean;
   }) => Promise<void> | void;
   onRegister?: () => void;
   onForgotPassword?: () => void;
 }
+
+const formSchema = z.object({
+  email: z
+    .string()
+    .min(1, {
+      message: "field is required",
+    })
+    .regex(/\S+@\S+\.\S+/, {
+      message: "Invalid email address",
+    }),
+  password: z
+    .string()
+    .min(2, {
+      message: "field is required",
+    })
+    .max(20, {
+      message: "must be at most 20 characters",
+    }),
+  // remember: z.boolean(),
+});
 
 export function LoginForm({
   onLogin,
   onRegister,
   onForgotPassword,
 }: LoginFormProps) {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [remember, setRemember] = useState(false);
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      email: "",
+      password: "",
+      // remember: false,
+    },
+    mode: "onSubmit",
+  });
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState("");
 
-  const validate = () => {
-    if (!email) return "Email is required";
-    if (!/\S+@\S+\.\S+/.test(email)) return "Invalid email address";
-    if (!password) return "Password is required";
-    if (password.length < 6) return "Password must be at least 6 characters";
-    return null;
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError(null);
-
-    const validationError = validate();
-    if (validationError) {
-      setError(validationError);
-      return;
-    }
+  const onSubmit = async (data: z.infer<typeof formSchema>) => {
+    if (loading) return;
+    setLoading(true);
+    setError("");
 
     try {
-      setLoading(true);
-      await onLogin?.({ email, password, remember });
-    } catch (err) {
-      setError("Login failed. Please try again.");
+      await onLogin?.(data);
+      form.reset();
+      toast.success("Sucessfully Logged In");
+    } catch (error: any) {
+      setError(() => error.response?.data ?? "Unavailable to Login");
+      toast.error("Failed to Login");
     } finally {
       setLoading(false);
     }
@@ -75,74 +97,121 @@ export function LoginForm({
         </CardHeader>
 
         <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-5">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
             {/* Email */}
-            <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="you@example.com"
-                autoComplete="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+            <FieldGroup className="">
+              <Controller
+                name="email"
                 disabled={loading}
+                control={form.control}
+                render={({ field, fieldState }) => (
+                  <Field data-invalid={fieldState.invalid} className="gap-1">
+                    <FieldLabel htmlFor={field.name}>Email</FieldLabel>
+                    <Input
+                      {...field}
+                      id={field.name}
+                      aria-invalid={fieldState.invalid}
+                      placeholder="you@example.com"
+                      autoComplete="on"
+                    />
+                    {fieldState.invalid && (
+                      <FieldError errors={[fieldState.error]} />
+                    )}
+                  </Field>
+                )}
               />
-            </div>
+            </FieldGroup>
 
             {/* Password */}
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <Label htmlFor="password">Password</Label>
-                <button
-                  type="button"
-                  onClick={onForgotPassword}
-                  className="text-sm text-muted-foreground hover:text-primary"
-                >
-                  Forgot password?
-                </button>
-              </div>
+            <FieldGroup className="">
+              <Controller
+                name="password"
+                control={form.control}
+                render={({ field, fieldState }) => (
+                  <Field data-invalid={fieldState.invalid} className="gap-1">
+                    <FieldGroup className="flex flex-row justify-between">
+                      <FieldLabel htmlFor="password">Password</FieldLabel>
+                      <button
+                        type="button"
+                        tabIndex={-1}
+                        onClick={onForgotPassword}
+                        className="text-sm text-muted-foreground hover:text-primary"
+                      >
+                        Forgot password?
+                      </button>
+                    </FieldGroup>
 
-              <div className="relative">
-                <Input
-                  id="password"
-                  type={showPassword ? "text" : "password"}
-                  placeholder="Enter your password"
-                  autoComplete="current-password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  disabled={loading}
-                />
+                    <div className="relative">
+                      <Input
+                        id="password"
+                        type={showPassword ? "text" : "password"}
+                        autoComplete="new-password"
+                        disabled={loading}
+                        {...field}
+                      />
 
-                <button
-                  type="button"
-                  onClick={() => setShowPassword((prev) => !prev)}
-                  className="absolute inset-y-0 right-3 flex items-center text-muted-foreground"
-                >
-                  {showPassword ? (
-                    <EyeOff className="h-4 w-4" />
-                  ) : (
-                    <Eye className="h-4 w-4" />
-                  )}
-                </button>
-              </div>
-            </div>
+                      <button
+                        type="button"
+                        disabled={loading}
+                        tabIndex={-1}
+                        onClick={() => setShowPassword((prev) => !prev)}
+                        className="absolute inset-y-0 right-3 flex items-center text-muted-foreground"
+                      >
+                        {showPassword ? (
+                          <EyeOff className="h-4 w-4" />
+                        ) : (
+                          <Eye className="h-4 w-4" />
+                        )}
+                      </button>
+                    </div>
+
+                    {fieldState.invalid && (
+                      <FieldError errors={[fieldState.error]} />
+                    )}
+                  </Field>
+                )}
+              />
+            </FieldGroup>
 
             {/* Remember Me */}
-            <div className="flex items-center space-x-2">
-              <Checkbox
-                id="remember"
-                checked={remember}
-                onCheckedChange={(checked) => setRemember(checked === true)}
-                disabled={loading}
+            {/* <FieldGroup className="flex-row gap-1">
+              <Controller
+                name="remember"
+                control={form.control}
+                render={({ field, fieldState }) => (
+                  <Field>
+                    <Field
+                      orientation="horizontal"
+                      data-invalid={fieldState.invalid}
+                    >
+                      <Checkbox
+                        id={field.name}
+                        name={field.name}
+                        aria-invalid={fieldState.invalid}
+                        checked={field.value}
+                        onCheckedChange={(checked) => field.onChange(checked)}
+                      />
+                      <FieldLabel
+                        htmlFor={field.name}
+                        className="text-sm leading-none"
+                      >
+                        Remember me
+                      </FieldLabel>
+                    </Field>
+                    {fieldState.invalid && (
+                      <FieldError errors={[fieldState.error]} />
+                    )}
+                  </Field>
+                )}
               />
-              <Label htmlFor="remember" className="text-sm">
-                Remember me
-              </Label>
-            </div>
+            </FieldGroup> */}
 
             {/* Error */}
-            {error && <p className="text-sm text-destructive">{error}</p>}
+            {error && (
+              <FieldGroup className="text-center text-sm text-destructive">
+                {error}
+              </FieldGroup>
+            )}
 
             {/* Buttons */}
             <div className="flex flex-col space-y-3">

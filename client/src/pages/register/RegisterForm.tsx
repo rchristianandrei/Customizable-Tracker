@@ -116,9 +116,9 @@ export function RegisterForm({ onRegister, onLogin }: RegisterFormProps) {
     } catch (error: any) {
       setOnSubmitError(() => error.response?.data ?? "Unavailable to Register");
       toast.error("Failed to Register");
+    } finally {
+      setLoading(false);
     }
-
-    setLoading(false);
   };
 
   return (
@@ -300,7 +300,10 @@ export function RegisterForm({ onRegister, onLogin }: RegisterFormProps) {
                         checked={field.value}
                         onCheckedChange={(checked) => field.onChange(checked)}
                       />
-                      <FieldLabel className="text-sm leading-none">
+                      <FieldLabel
+                        htmlFor={field.name}
+                        className="text-sm leading-none"
+                      >
                         I agree to the{" "}
                         <a
                           tabIndex={-1}
@@ -328,7 +331,7 @@ export function RegisterForm({ onRegister, onLogin }: RegisterFormProps) {
             </FieldGroup>
 
             {onSubmitError && (
-              <FieldGroup className="text-center text-sm text-red-600">
+              <FieldGroup className="text-center text-sm text-destructive">
                 {onSubmitError}
               </FieldGroup>
             )}

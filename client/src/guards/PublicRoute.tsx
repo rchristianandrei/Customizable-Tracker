@@ -2,9 +2,9 @@ import { Navigate, Outlet } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthProvider";
 
 export const PublicRoute = () => {
-  const { email } = useAuth();
+  const { user } = useAuth();
 
-  if (email) return <Navigate to="/" replace />;
+  if (user) return <Navigate to="/" replace />;
 
   return <Outlet></Outlet>;
 };
