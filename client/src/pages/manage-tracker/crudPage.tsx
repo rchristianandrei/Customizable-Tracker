@@ -31,7 +31,11 @@ export const CrudPage = () => {
     <div className="h-full flex flex-col gap-4">
       {/* Top Controls */}
       <div className="flex flex-col sm:flex-row gap-4 sm:justify-between">
-        <Input placeholder="Search..." className="w-full sm:max-w-sm" />
+        <Input
+          id="search"
+          placeholder="Search..."
+          className="w-full sm:max-w-sm"
+        />
         <CreateTracker></CreateTracker>
       </div>
 
