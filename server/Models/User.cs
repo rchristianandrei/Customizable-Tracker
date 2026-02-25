@@ -19,4 +19,9 @@ public class User
 
     [Required]
     public string PasswordHash { get; set; } = string.Empty;
+
+    [Required]
+    public DateTime AddedAt { get; set; }
+
+    public ICollection<Tracker> Trackers { get; set; } = [];
 }

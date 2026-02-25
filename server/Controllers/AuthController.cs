@@ -1,12 +1,10 @@
-﻿using DotNetEnv;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using server.Data;
 using server.Dtos.Auth;
 using server.Interfaces;
 using server.Mappers;
 using server.Models;
-using server.Services;
 using server.Settings;
 
 namespace server.Controllers;
@@ -15,7 +13,7 @@ namespace server.Controllers;
 [ApiController]
 public class AuthController(
     ApplicationDbContext _context,
-    AuthService _authService,
+    IAuthService _authService,
     IJwtService _jwtService,
     JwtSettings _jwtSettings
     ) : ControllerBase
@@ -72,6 +70,7 @@ public class AuthController(
             Email = value.Email,
             FirstName = value.FirstName,
             LastName = value.LastName,
+            AddedAt = DateTime.Now
         };
 
         _authService.CreateUser(user, value.Password);

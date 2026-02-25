@@ -1,9 +1,10 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using server.Interfaces;
 using server.Models;
 
 namespace server.Services;
 
-public class AuthService(IPasswordHasher<User> passwordHasher)
+public class AuthService(IPasswordHasher<User> passwordHasher) : IAuthService
 {
     private readonly IPasswordHasher<User> passwordHasher = passwordHasher;
 
