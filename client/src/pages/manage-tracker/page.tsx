@@ -1,5 +1,5 @@
 import { RootLayout } from "@/components/layout/rootLayout/page";
-import CrudPage from "./crudPage";
+import { CrudPage } from "./CrudPage";
 
 export const ManageTracker = () => {
   return (
