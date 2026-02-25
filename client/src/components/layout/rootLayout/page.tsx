@@ -27,10 +27,8 @@ export const RootLayout = ({
             <h1 className="text-lg font-bold">{featureName}</h1>
           </div>
         </header>
-        <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
-          <div className="min-h-screen flex-1 rounded-xl md:min-h-min">
-            {children}
-          </div>
+        <div className="flex flex-1 overflow-auto flex-col gap-4 p-4">
+          {children}
         </div>
       </SidebarInset>
     </SidebarProvider>

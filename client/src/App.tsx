@@ -1,8 +1,9 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 
-import { Login } from "./pages/login/page";
-import { Dashboard } from "./pages/dashboard/page";
-import { Register } from "./pages/register/page";
+import { Login } from "@/pages/login/page";
+import { Register } from "@/pages/register/page";
+import { ManageTracker } from "@/pages/manage-tracker/page";
+import { Dashboard } from "@/pages/dashboard/page";
 
 import { AuthProvider } from "@/contexts/AuthProvider";
 
@@ -21,6 +22,10 @@ function App() {
             <Route path="/register" element={<Register></Register>}></Route>
           </Route>
           <Route element={<PrivateRoute></PrivateRoute>}>
+            <Route
+              path="/manage-tracker"
+              element={<ManageTracker></ManageTracker>}
+            ></Route>
             <Route path="/" element={<Dashboard></Dashboard>}></Route>
           </Route>
         </Routes>
