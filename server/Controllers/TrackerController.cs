@@ -5,6 +5,7 @@ using server.Data;
 using server.Dtos;
 using server.Dtos.Tracker;
 using server.Interfaces;
+using server.Mappers;
 using server.Models;
 
 namespace server.Controllers
@@ -27,7 +28,7 @@ namespace server.Controllers
                 .Skip((dto.PageOrDefault - 1) * dto.PageSizeOrDefault)
                 .Take(dto.PageSizeOrDefault)
                 .ToListAsync();
-            var dtos = trackers.Select(t => new { t.Id, t.Name, t.Description, t.CreatedAt });
+            var dtos = trackers.Select(t => t.ToDto());
 
             return Ok(new {
                 totalCount,
@@ -58,7 +59,7 @@ namespace server.Controllers
             await _context.Trackers.AddAsync(tracker);
             await _context.SaveChangesAsync();
 
-            return Ok();
+            return Ok(tracker.ToDto());
         }
 
         //[HttpPut("{id}")]

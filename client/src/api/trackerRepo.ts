@@ -11,4 +11,8 @@ export const trackerRepo = {
     );
     return res.data;
   },
+  create: async (body: { name: string; description: string }) => {
+    const res = await api.post<Tracker>(`${controller}`, body);
+    return res.data;
+  },
 };

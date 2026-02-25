@@ -11,6 +11,10 @@ export const ManageTrackerContext = createContext<
       trackers: PaginatedData<Tracker> | null;
       loading: boolean;
       setPage: (page: number) => void;
+      createTracker: (data: {
+        name: string;
+        description: string;
+      }) => Promise<Tracker>;
     }
   | undefined
 >(undefined);
@@ -55,8 +59,18 @@ export const ManageTrackerProvider = ({
     navigate({ pathname: location.pathname, search: params.toString() });
   };
 
+  const createTracker = async (data: { name: string; description: string }) => {
+    const tracker = await trackerRepo.create(data);
+    console.log(tracker);
+    setTrackers((t) => {
+      if (!t) return t;
+      return { ...t, data: [tracker, ...t.data.slice(0, -1)] };
+    });
+    return tracker;
+  };
+
   return (
-    <ManageTrackerContext value={{ trackers, loading, setPage }}>
+    <ManageTrackerContext value={{ trackers, loading, setPage, createTracker }}>
       {children}
     </ManageTrackerContext>
   );
