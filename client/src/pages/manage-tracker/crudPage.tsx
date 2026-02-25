@@ -36,7 +36,7 @@ export const CrudPage = () => {
       </div>
 
       {/* Card Grid */}
-      <div className="flex-1 overflow-auto">
+      <div className="flex-1 overflow-auto relative">
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {trackers &&
             trackers.data.map((item) => (
@@ -87,7 +87,7 @@ export const CrudPage = () => {
           </div>
         )}
         {loading && (
-          <div className="h-full flex justify-center items-center">
+          <div className="absolute inset-0 flex justify-center items-center">
             <Loader2 className="h-10 w-10 animate-spin" />
           </div>
         )}
