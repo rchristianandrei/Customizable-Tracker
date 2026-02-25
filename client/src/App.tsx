@@ -2,13 +2,13 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 
 import { Login } from "@/pages/login/page";
 import { Register } from "@/pages/register/page";
-import { ManageTracker } from "@/pages/manage-tracker/page";
 import { Dashboard } from "@/pages/dashboard/page";
+import { ManageTracker } from "@/pages/manage-tracker/page";
 
 import { AuthProvider } from "@/contexts/AuthProvider";
 
-import { PrivateRoute } from "@/guards/PrivateRoute";
 import { PublicRoute } from "@/guards/PublicRoute";
+import { PrivateRoute } from "@/guards/PrivateRoute";
 
 import { Toaster } from "@/components/ui/sonner";
 

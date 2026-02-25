@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { Loader2 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -16,63 +16,15 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Badge } from "@/components/ui/badge";
-import { CreateTracker } from "./CreateTracker";
 
-type Item = {
-  id: number;
-  name: string;
-  description: string;
-  createdAt: Date;
-};
+import { CreateTracker } from "./CreateTracker";
+import { useManageTracker } from "./ManageTrackerProvider";
 
 export const CrudPage = () => {
-  const [items, setItems] = useState<Item[]>([
-    {
-      id: 1,
-      name: "Project Alpha",
-      description: "Internal admin dashboard project.",
-      createdAt: new Date(),
-    },
-    {
-      id: 2,
-      name: "Marketing Site",
-      description: "Landing page redesign for Q2 campaign.",
-      createdAt: new Date(),
-    },
-    {
-      id: 3,
-      name: "Project Alpha",
-      description: "Internal admin dashboard project.",
-      createdAt: new Date(),
-    },
-    {
-      id: 4,
-      name: "Marketing Site",
-      description: "Landing page redesign for Q2 campaign.",
-      createdAt: new Date(),
-    },
-    {
-      id: 5,
-      name: "Project Alpha",
-      description: "Internal admin dashboard project.",
-      createdAt: new Date(),
-    },
-    {
-      id: 6,
-      name: "Project Alpha",
-      description: "Internal admin dashboard project.",
-      createdAt: new Date(),
-    },
-    {
-      id: 7,
-      name: "Project Alpha",
-      description: "Internal admin dashboard project.",
-      createdAt: new Date(),
-    },
-  ]);
+  const { trackers, loading, setPage } = useManageTracker();
 
   const handleDelete = (id: number) => {
-    setItems((prev) => prev.filter((item) => item.id !== id));
+    console.log("Delete", id);
   };
 
   return (
@@ -86,45 +38,57 @@ export const CrudPage = () => {
       {/* Card Grid */}
       <div className="flex-1 overflow-auto">
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {items.map((item) => (
-            <Card key={item.id} className="relative">
-              <CardHeader>
-                <div className="flex justify-between items-start">
-                  <div>
-                    <CardTitle>{item.name}</CardTitle>
-                    <CardDescription>Created {"Date"}</CardDescription>
+          {trackers &&
+            trackers.data.map((item) => (
+              <Card key={item.id} className="relative">
+                <CardHeader>
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <CardTitle>{item.name}</CardTitle>
+                      <CardDescription>
+                        {new Date(item.createdAt).toLocaleDateString("en-US", {
+                          month: "short",
+                          day: "2-digit",
+                          year: "numeric",
+                        })}
+                      </CardDescription>
+                    </div>
+
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" size="sm">
+                          ⋮
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuItem
+                          className="text-red-600"
+                          onClick={() => handleDelete(item.id)}
+                        >
+                          Delete
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
                   </div>
+                </CardHeader>
 
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="sm">
-                        ⋮
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuItem
-                        className="text-red-600"
-                        onClick={() => handleDelete(item.id)}
-                      >
-                        Delete
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </div>
-              </CardHeader>
-
-              <CardContent>
-                <p className="text-sm text-muted-foreground line-clamp-3">
-                  {item.description || "No description provided."}
-                </p>
-              </CardContent>
-            </Card>
-          ))}
+                <CardContent>
+                  <p className="text-sm text-muted-foreground line-clamp-3">
+                    {item.description || "No description provided."}
+                  </p>
+                </CardContent>
+              </Card>
+            ))}
         </div>
         {/* Empty State */}
-        {items.length === 0 && (
+        {!loading && trackers && trackers.data.length === 0 && (
           <div className="text-center text-muted-foreground">
             No results found.
+          </div>
+        )}
+        {loading && (
+          <div className="h-full flex justify-center items-center">
+            <Loader2 className="h-10 w-10 animate-spin" />
           </div>
         )}
       </div>
@@ -132,32 +96,43 @@ export const CrudPage = () => {
       {/* Count */}
       <div className="flex items-center justify-center">
         <div className="flex items-center gap-2">
-          <Badge variant="secondary" className="px-3 py-1">
-            {items.length} result
-            {items.length !== 1 && "s"}
-          </Badge>
+          {trackers && (
+            <Badge variant="secondary" className="px-3 py-1">
+              {trackers.data.length} result
+              {trackers.data.length !== 1 && "s"}
+            </Badge>
+          )}
         </div>
       </div>
 
       {/* Pagination */}
       <div className="flex justify-center gap-2">
-        <Button
-          variant="outline"
-          //   disabled={page === 1}
-          //   onClick={() => setPage((p) => p - 1)}
-        >
-          Prev
-        </Button>
+        {trackers && (
+          <>
+            <Button
+              variant="outline"
+              disabled={trackers.page === 1}
+              onClick={() => setPage(trackers.page - 1)}
+            >
+              Prev
+            </Button>
 
-        <span className="flex items-center px-4 text-sm">Page 1 of 1</span>
+            <span className="flex items-center px-4 text-sm">
+              Page {trackers.page} of {trackers.totalPages}
+            </span>
 
-        <Button
-          variant="outline"
-          //   disabled={page === totalPages || totalPages === 0}
-          //   onClick={() => setPage((p) => p + 1)}
-        >
-          Next
-        </Button>
+            <Button
+              variant="outline"
+              disabled={
+                trackers.page === trackers.totalPages ||
+                trackers.totalPages === 0
+              }
+              onClick={() => setPage(trackers.page + 1)}
+            >
+              Next
+            </Button>
+          </>
+        )}
       </div>
     </div>
   );

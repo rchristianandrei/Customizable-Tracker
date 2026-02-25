@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using server.Data;
+using server.Dtos;
 using server.Dtos.Tracker;
 using server.Interfaces;
 using server.Models;
@@ -17,12 +18,24 @@ namespace server.Controllers
     ) : ControllerBase
     {
         [HttpGet]
-        public async Task<IActionResult> Get()
+        public async Task<IActionResult> Get([FromQuery] PaginatedQueryParameters dto)
         {
-            var trackers = await _context.Trackers.Include(t => t.User).ToListAsync();
+            var query = _context.Trackers.Include(t => t.User).AsQueryable();
+            var totalCount = await query.CountAsync();
+            var trackers = await query
+                .OrderByDescending(t => t.CreatedAt)
+                .Skip((dto.PageOrDefault - 1) * dto.PageSizeOrDefault)
+                .Take(dto.PageSizeOrDefault)
+                .ToListAsync();
             var dtos = trackers.Select(t => new { t.Id, t.Name, t.Description, t.CreatedAt });
 
-            return Ok(dtos);
+            return Ok(new {
+                totalCount,
+                page = dto.PageOrDefault,
+                pageSize =  dto.PageSizeOrDefault,
+                totalPages = (int)Math.Ceiling(totalCount / (double)dto.PageSizeOrDefault),
+                data = dtos
+            });
         }
 
         //[HttpGet("{id}")]
