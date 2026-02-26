@@ -16,10 +16,9 @@ import {
 } from "@/components/ui/sidebar";
 import { useAuth } from "@/contexts/AuthProvider";
 import { Logout } from "./logout";
-import { toast } from "sonner";
 
 export function NavUser() {
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
   const { isMobile } = useSidebar();
 
   const [open, setOpen] = useState(false);
@@ -28,19 +27,6 @@ export function NavUser() {
     if (!user) return "??";
     return `${user.firstName[0]}${user.lastName[0]}`;
   }, [user]);
-
-  const onLogout = async () => {
-    try {
-      await logout();
-      toast.success("Logged out");
-    } catch (error) {
-      toast.error(
-        "Unable to logout. Please try clearing your cookies instead.",
-      );
-    } finally {
-      setOpen(false);
-    }
-  };
 
   return (
     <>
@@ -82,11 +68,7 @@ export function NavUser() {
           </SidebarMenuItem>
         </SidebarMenu>
       )}
-      <Logout
-        open={open}
-        onConfirm={onLogout}
-        onCancel={() => setOpen(false)}
-      />
+      <Logout open={open} onClose={() => setOpen(false)} />
     </>
   );
 }

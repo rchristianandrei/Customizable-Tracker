@@ -12,22 +12,33 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { ButtonSpinner } from "@/components/spinners/ButtonSpinner";
+import { useAuth } from "@/contexts/AuthProvider";
+import { toast } from "sonner";
 
 export function Logout({
   open,
-  onConfirm,
-  onCancel,
+  onClose,
 }: {
   open: boolean;
-  onConfirm: () => Promise<void> | void;
-  onCancel: () => void;
+  onClose: () => void;
 }) {
+  const { logout } = useAuth();
   const [loading, setLoading] = useState(false);
 
   const onConfirmClick = async () => {
     setLoading(true);
-    await onConfirm();
-    setLoading(false);
+
+    try {
+      await logout();
+      toast.success("Logged out");
+    } catch (error) {
+      toast.error(
+        "Unable to logout. Please try clearing your cookies instead.",
+      );
+    } finally {
+      onClose();
+      setLoading(false);
+    }
   };
 
   return (
@@ -45,7 +56,7 @@ export function Logout({
         </AlertDialogHeader>
 
         <AlertDialogFooter>
-          <AlertDialogCancel onClick={onCancel} disabled={loading}>
+          <AlertDialogCancel onClick={onClose} disabled={loading}>
             Cancel
           </AlertDialogCancel>
           <AlertDialogAction
