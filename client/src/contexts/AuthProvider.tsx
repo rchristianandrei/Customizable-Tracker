@@ -7,6 +7,7 @@ export const AuthContext = createContext<
       user: User | null;
       loading: boolean;
       login: (data: { email: string; password: string }) => Promise<void>;
+      logout: () => Promise<void>;
     }
   | undefined
 >(undefined);
@@ -33,8 +34,13 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     setUser(result);
   };
 
+  const logout = async () => {
+    await authRepo.logout();
+    setUser(null);
+  };
+
   return (
-    <AuthContext.Provider value={{ user, loading, login }}>
+    <AuthContext.Provider value={{ user, loading, login, logout }}>
       {children}
     </AuthContext.Provider>
   );

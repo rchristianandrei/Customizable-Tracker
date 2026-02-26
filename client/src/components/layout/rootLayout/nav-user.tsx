@@ -1,3 +1,4 @@
+import { useMemo, useState } from "react";
 import { ChevronsUpDown, LogOut } from "lucide-react";
 
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -14,16 +15,32 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { useAuth } from "@/contexts/AuthProvider";
-import { useMemo } from "react";
+import { Logout } from "./logout";
+import { toast } from "sonner";
 
 export function NavUser() {
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
   const { isMobile } = useSidebar();
+
+  const [open, setOpen] = useState(false);
 
   const initials = useMemo(() => {
     if (!user) return "??";
     return `${user.firstName[0]}${user.lastName[0]}`;
   }, [user]);
+
+  const onLogout = async () => {
+    try {
+      await logout();
+      toast.success("Logged out");
+    } catch (error) {
+      toast.error(
+        "Unable to logout. Please try clearing your cookies instead.",
+      );
+    } finally {
+      setOpen(false);
+    }
+  };
 
   return (
     <>
@@ -56,7 +73,7 @@ export function NavUser() {
                 align="end"
                 sideOffset={4}
               >
-                <DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setOpen(true)}>
                   <LogOut />
                   Log out
                 </DropdownMenuItem>
@@ -65,6 +82,11 @@ export function NavUser() {
           </SidebarMenuItem>
         </SidebarMenu>
       )}
+      <Logout
+        open={open}
+        onConfirm={onLogout}
+        onCancel={() => setOpen(false)}
+      />
     </>
   );
 }
