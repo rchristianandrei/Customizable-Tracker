@@ -67,9 +67,17 @@ namespace server.Controllers
         //{
         //}
 
-        //[HttpDelete("{id}")]
-        //public void Delete(int id)
-        //{
-        //}
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var tracker = await _context.Trackers.FindAsync(id);
+
+            if (tracker == null) return NotFound();
+
+            _context.Trackers.Remove(tracker);
+            await _context.SaveChangesAsync();
+
+            return NoContent();
+        }
     }
 }

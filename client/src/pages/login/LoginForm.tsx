@@ -1,7 +1,7 @@
 import z from "zod";
 import { toast } from "sonner";
 import { useState } from "react";
-import { Eye, EyeOff, Loader2 } from "lucide-react";
+import { Eye, EyeOff } from "lucide-react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from "react-hook-form";
 
@@ -20,6 +20,7 @@ import {
   FieldGroup,
   FieldLabel,
 } from "@/components/ui/field";
+import { ButtonSpinner } from "@/components/spinners/ButtonSpinner";
 
 interface LoginFormProps {
   onLogin?: (data: {
@@ -216,7 +217,7 @@ export function LoginForm({
             {/* Buttons */}
             <div className="flex flex-col space-y-3">
               <Button type="submit" disabled={loading}>
-                {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                {loading && <ButtonSpinner />}
                 Login
               </Button>
 

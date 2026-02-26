@@ -2,7 +2,7 @@ import z from "zod";
 import { toast } from "sonner";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
-import { Eye, EyeOff, Loader2 } from "lucide-react";
+import { Eye, EyeOff } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -22,6 +22,7 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import { Progress } from "@/components/ui/progress";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { ButtonSpinner } from "@/components/spinners/ButtonSpinner";
 
 interface RegisterFormProps {
   onRegister?: (data: {
@@ -339,7 +340,7 @@ export function RegisterForm({ onRegister, onLogin }: RegisterFormProps) {
             {/* Buttons */}
             <FieldGroup className="flex flex-col gap-2">
               <Button type="submit" disabled={loading}>
-                {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                {loading && <ButtonSpinner />}
                 Create Account
               </Button>
 

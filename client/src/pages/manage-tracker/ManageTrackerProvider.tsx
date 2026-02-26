@@ -14,7 +14,8 @@ export const ManageTrackerContext = createContext<
       createTracker: (data: {
         name: string;
         description: string;
-      }) => Promise<Tracker>;
+      }) => Promise<void>;
+      deleteTracker: (id: number) => Promise<void>;
     }
   | undefined
 >(undefined);
@@ -32,22 +33,23 @@ export const ManageTrackerProvider = ({
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const loadTrackers = async () => {
-      setLoading(true);
-      try {
-        const trackers = await trackerRepo.getMine({
-          page: Number(searchParams.get("page")),
-          pageSize: Number(searchParams.get("pageSize")),
-        });
-        setTrackers(trackers);
-      } catch (error: any) {
-        console.log(error);
-      } finally {
-        setLoading(false);
-      }
-    };
     loadTrackers();
   }, [location.search]);
+
+  const loadTrackers = async () => {
+    setLoading(true);
+    try {
+      const trackers = await trackerRepo.getMine({
+        page: Number(searchParams.get("page")),
+        pageSize: Number(searchParams.get("pageSize")),
+      });
+      setTrackers(trackers);
+    } catch (error: any) {
+      console.log(error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const setPage = (page: number) => {
     if (!trackers) return;
@@ -60,17 +62,19 @@ export const ManageTrackerProvider = ({
   };
 
   const createTracker = async (data: { name: string; description: string }) => {
-    const tracker = await trackerRepo.create(data);
-    console.log(tracker);
-    setTrackers((t) => {
-      if (!t) return t;
-      return { ...t, data: [tracker, ...t.data.slice(0, -1)] };
-    });
-    return tracker;
+    await trackerRepo.create(data);
+    await loadTrackers();
+  };
+
+  const deleteTracker = async (id: number) => {
+    await trackerRepo.delete(id);
+    await loadTrackers();
   };
 
   return (
-    <ManageTrackerContext value={{ trackers, loading, setPage, createTracker }}>
+    <ManageTrackerContext
+      value={{ trackers, loading, setPage, createTracker, deleteTracker }}
+    >
       {children}
     </ManageTrackerContext>
   );

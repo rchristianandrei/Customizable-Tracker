@@ -153,7 +153,7 @@ export const CreateTracker = () => {
           {/* Buttons */}
           <FieldGroup>
             <Button type="submit" disabled={loading}>
-              {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              {loading && <Loader2 className="h-4 w-4 animate-spin" />}
               Save
             </Button>
           </FieldGroup>

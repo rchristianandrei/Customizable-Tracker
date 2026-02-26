@@ -15,4 +15,8 @@ export const trackerRepo = {
     const res = await api.post<Tracker>(`${controller}`, body);
     return res.data;
   },
+  delete: async (id: number) => {
+    const res = await api.delete(`${controller}/${id}`);
+    return res.data;
+  },
 };
