@@ -1,3 +1,5 @@
+import { toast } from "sonner";
+import { useState } from "react";
 import { Loader2, Trash2 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -17,11 +19,11 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Badge } from "@/components/ui/badge";
 
+import type { Tracker } from "@/types/tracker";
+
 import { CreateTracker } from "./CreateTracker";
 import { useManageTracker } from "./ManageTrackerProvider";
 import { DeleteTracker } from "./DeleteTracker";
-import { useState } from "react";
-import type { Tracker } from "@/types/tracker";
 
 export const CrudPage = () => {
   const { trackers, loading, setPage, deleteTracker } = useManageTracker();
@@ -31,8 +33,15 @@ export const CrudPage = () => {
   );
 
   const onDeleteConfirm = async () => {
-    if (deleteEvent) await deleteTracker(deleteEvent.tracker.id);
-    setDeleteEvent(null);
+    if (!deleteEvent) return;
+    try {
+      await deleteTracker(deleteEvent.tracker.id);
+      toast.success(`Deleted ${deleteEvent.tracker.name}`);
+    } catch (error) {
+      toast.error(`Unable to delete ${deleteEvent.tracker.name}`);
+    } finally {
+      setDeleteEvent(null);
+    }
   };
 
   return (
