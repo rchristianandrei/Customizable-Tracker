@@ -1,3 +1,5 @@
+import { toast } from "sonner";
+import { useState } from "react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -9,55 +11,69 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { useState } from "react";
 import { ButtonSpinner } from "@/components/spinners/ButtonSpinner";
+import type { Tracker } from "@/types/tracker";
+import { useManageTracker } from "./ManageTrackerProvider";
 
 export function DeleteTracker({
-  open,
-  item,
-  onConfirm,
-  onCancel,
+  tracker,
+  onClose,
 }: {
-  open: boolean;
-  item: string;
-  onConfirm: () => Promise<void> | void;
-  onCancel: () => void;
+  tracker?: Tracker;
+  onClose: () => void;
 }) {
+  const { deleteTracker } = useManageTracker();
+
   const [loading, setLoading] = useState(false);
 
   const onConfirmClick = async () => {
+    if (!tracker) return;
     setLoading(true);
-    await onConfirm();
-    setLoading(false);
+
+    try {
+      await deleteTracker(tracker.id);
+      toast.success(`Deleted ${tracker.name}`);
+    } catch (error) {
+      toast.error(`Unable to delete ${tracker.name}`);
+    } finally {
+      onClose();
+      setLoading(false);
+    }
   };
 
   return (
-    <AlertDialog open={open}>
-      <AlertDialogTrigger asChild></AlertDialogTrigger>
+    <>
+      {tracker && (
+        <AlertDialog open={true}>
+          <AlertDialogTrigger asChild></AlertDialogTrigger>
 
-      <AlertDialogContent>
-        <AlertDialogHeader>
-          <AlertDialogTitle>Do you want to delete {item}?</AlertDialogTitle>
-          <AlertDialogDescription>
-            This action cannot be undone. This will permanently delete{" "}
-            <span className="font-semibold">{item}</span>.
-          </AlertDialogDescription>
-        </AlertDialogHeader>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>
+                Do you want to delete {tracker.name}?
+              </AlertDialogTitle>
+              <AlertDialogDescription>
+                This action cannot be undone. This will permanently delete{" "}
+                <span className="font-semibold">{tracker.name}</span>.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
 
-        <AlertDialogFooter>
-          <AlertDialogCancel onClick={onCancel} disabled={loading}>
-            Cancel
-          </AlertDialogCancel>
-          <AlertDialogAction
-            variant="destructive"
-            onClick={onConfirmClick}
-            disabled={loading}
-          >
-            {loading && <ButtonSpinner />}
-            Delete
-          </AlertDialogAction>
-        </AlertDialogFooter>
-      </AlertDialogContent>
-    </AlertDialog>
+            <AlertDialogFooter>
+              <AlertDialogCancel onClick={onClose} disabled={loading}>
+                Cancel
+              </AlertDialogCancel>
+              <AlertDialogAction
+                variant="destructive"
+                onClick={onConfirmClick}
+                disabled={loading}
+              >
+                {loading && <ButtonSpinner />}
+                Delete
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+      )}
+    </>
   );
 }

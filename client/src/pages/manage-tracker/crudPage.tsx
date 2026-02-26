@@ -1,4 +1,3 @@
-import { toast } from "sonner";
 import { useState } from "react";
 import { Loader2, Trash2 } from "lucide-react";
 
@@ -26,23 +25,11 @@ import { useManageTracker } from "./ManageTrackerProvider";
 import { DeleteTracker } from "./DeleteTracker";
 
 export const CrudPage = () => {
-  const { trackers, loading, setPage, deleteTracker } = useManageTracker();
+  const { trackers, loading, setPage } = useManageTracker();
 
   const [deleteEvent, setDeleteEvent] = useState<{ tracker: Tracker } | null>(
     null,
   );
-
-  const onDeleteConfirm = async () => {
-    if (!deleteEvent) return;
-    try {
-      await deleteTracker(deleteEvent.tracker.id);
-      toast.success(`Deleted ${deleteEvent.tracker.name}`);
-    } catch (error) {
-      toast.error(`Unable to delete ${deleteEvent.tracker.name}`);
-    } finally {
-      setDeleteEvent(null);
-    }
-  };
 
   return (
     <>
@@ -161,10 +148,8 @@ export const CrudPage = () => {
         </div>
       </div>
       <DeleteTracker
-        open={deleteEvent !== null}
-        item={deleteEvent?.tracker.name ?? "Tracker"}
-        onConfirm={onDeleteConfirm}
-        onCancel={() => setDeleteEvent(null)}
+        tracker={deleteEvent?.tracker}
+        onClose={() => setDeleteEvent(null)}
       ></DeleteTracker>
     </>
   );
