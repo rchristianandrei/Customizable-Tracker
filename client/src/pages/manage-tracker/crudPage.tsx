@@ -25,7 +25,7 @@ import { DeleteTracker } from "./DeleteTracker";
 import { SearchBox } from "@/components/inputs/SearchBox";
 
 export const CrudPage = () => {
-  const { trackers, loading, setPage } = useManageTracker();
+  const { trackers, loading, getParams, setParams } = useManageTracker();
 
   const [deleteEvent, setDeleteEvent] = useState<{ tracker: Tracker } | null>(
     null,
@@ -38,7 +38,10 @@ export const CrudPage = () => {
         <div className="flex flex-col sm:flex-row gap-4 sm:justify-between">
           <SearchBox
             className="w-full sm:max-w-sm"
-            fetchData={(query) => console.log(query)}
+            value={getParams.query}
+            fetchData={(query) =>
+              setParams((p) => ({ ...p, query: query ?? "" }))
+            }
           ></SearchBox>
           <CreateTracker></CreateTracker>
         </div>
@@ -123,7 +126,9 @@ export const CrudPage = () => {
               <Button
                 variant="outline"
                 disabled={trackers.page === 1}
-                onClick={() => setPage(trackers.page - 1)}
+                onClick={() =>
+                  setParams((p) => ({ ...p, page: trackers.page - 1 }))
+                }
               >
                 Prev
               </Button>
@@ -138,7 +143,9 @@ export const CrudPage = () => {
                   trackers.page === trackers.totalPages ||
                   trackers.totalPages === 0
                 }
-                onClick={() => setPage(trackers.page + 1)}
+                onClick={() =>
+                  setParams((p) => ({ ...p, page: trackers.page + 1 }))
+                }
               >
                 Next
               </Button>

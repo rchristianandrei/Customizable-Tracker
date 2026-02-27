@@ -1,16 +1,18 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 
 import type { PaginatedData } from "@/types/paginatedData";
 import type { Tracker } from "@/types/tracker";
 
 import { trackerRepo } from "@/api/trackerRepo";
+import type { QueryParams } from "@/types/params";
 
 export const ManageTrackerContext = createContext<
   | {
       trackers: PaginatedData<Tracker> | null;
       loading: boolean;
-      setPage: (page: number) => void;
+      getParams: QueryParams;
+      setParams: (params: (prev: QueryParams) => QueryParams) => void;
       createTracker: (data: {
         name: string;
         description: string;
@@ -39,9 +41,9 @@ export const ManageTrackerProvider = ({
   const loadTrackers = async () => {
     setLoading(true);
     try {
+      const params = getParams;
       const trackers = await trackerRepo.getMine({
-        page: Number(searchParams.get("page")),
-        pageSize: Number(searchParams.get("pageSize")),
+        ...params,
       });
       setTrackers(trackers);
     } catch (error: any) {
@@ -51,14 +53,33 @@ export const ManageTrackerProvider = ({
     }
   };
 
-  const setPage = (page: number) => {
+  const getParams = useMemo(
+    (): QueryParams => ({
+      query: searchParams.get("query") ?? "",
+      page: Number(searchParams.get("page")),
+      pageSize: Number(searchParams.get("pageSize")),
+    }),
+    [searchParams],
+  );
+
+  const setParams = (params: (prev: QueryParams) => QueryParams) => {
     if (!trackers) return;
 
-    const params = new URLSearchParams(location.search);
-    params.set("page", page.toString());
-    params.set("pageSize", trackers.pageSize.toString());
+    const { query, page } = params({
+      query: searchParams.get("query") ?? "",
+      page: Number(searchParams.get("page")),
+    });
 
-    navigate({ pathname: location.pathname, search: params.toString() });
+    const urlParams = new URLSearchParams(location.search);
+    if (query) urlParams.set("query", query.toString());
+    else urlParams.delete("query");
+
+    if (page) urlParams.set("page", page.toString());
+    else urlParams.delete("page");
+
+    urlParams.set("pageSize", trackers.pageSize.toString());
+
+    navigate({ pathname: location.pathname, search: urlParams.toString() });
   };
 
   const createTracker = async (data: { name: string; description: string }) => {
@@ -73,7 +94,14 @@ export const ManageTrackerProvider = ({
 
   return (
     <ManageTrackerContext
-      value={{ trackers, loading, setPage, createTracker, deleteTracker }}
+      value={{
+        trackers,
+        loading,
+        getParams,
+        setParams,
+        createTracker,
+        deleteTracker,
+      }}
     >
       {children}
     </ManageTrackerContext>

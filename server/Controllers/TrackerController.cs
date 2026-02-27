@@ -21,7 +21,10 @@ namespace server.Controllers
         [HttpGet]
         public async Task<IActionResult> Get([FromQuery] PaginatedQueryParameters dto)
         {
-            var query = _context.Trackers.Include(t => t.User).AsQueryable();
+            var query = _context.Trackers.AsQueryable();
+
+            if(dto.Query != null) query = query.Where(t => t.Name.Contains(dto.Query) || t.Description.Contains(dto.Query));
+
             var totalCount = await query.CountAsync();
             var trackers = await query
                 .OrderByDescending(t => t.CreatedAt)

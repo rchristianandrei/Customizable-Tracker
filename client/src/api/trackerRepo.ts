@@ -1,13 +1,14 @@
 import type { Tracker } from "@/types/tracker";
 import { api } from "./axios";
 import type { PaginatedData } from "@/types/paginatedData";
+import type { QueryParams } from "@/types/params";
 
 const controller = "tracker";
 
 export const trackerRepo = {
-  getMine: async (query: { page?: number; pageSize?: number }) => {
+  getMine: async (params: QueryParams) => {
     const res = await api.get<PaginatedData<Tracker>>(
-      `${controller}?page=${query.page}&pageSize=${query.pageSize}`,
+      `${controller}?query=${params.query}&page=${params.page}&pageSize=${params.pageSize}`,
     );
     return res.data;
   },

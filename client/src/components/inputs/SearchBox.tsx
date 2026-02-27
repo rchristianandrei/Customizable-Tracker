@@ -6,17 +6,23 @@ import { X } from "lucide-react";
 import { Button } from "../ui/button";
 
 type Props = {
-  fetchData: (query?: string) => void;
+  fetchData?: (query: string) => void;
   className?: string;
+  value?: string;
 };
 
-export function SearchBox({ fetchData, className }: Props) {
+export function SearchBox({ fetchData, className, value }: Props) {
   const input = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (!input || !input.current) return;
+    input.current.value = value ?? "";
+  }, [input]);
 
   const debouncedSearch = useMemo(
     () =>
       debounce((value: string) => {
-        fetchData(value);
+        fetchData?.(value);
       }, 500),
     [fetchData],
   );
@@ -32,7 +38,7 @@ export function SearchBox({ fetchData, className }: Props) {
 
     if (trimmed === "") {
       debouncedSearch.cancel();
-      fetchData();
+      fetchData?.(value);
       return;
     }
 

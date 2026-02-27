@@ -1,9 +1,12 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.Mvc.ModelBinding;
+using System.ComponentModel.DataAnnotations;
 
 namespace server.Dtos;
 
 public class PaginatedQueryParameters
 {
+    public string? Query { get; set; } = string.Empty;
+
     private int? _page;
     [Range(1, int.MaxValue)]
     public int? Page
@@ -20,6 +23,9 @@ public class PaginatedQueryParameters
         set => _pageSize = (value is null or <= 0) ? null : value;
     }
 
+    [BindNever]
     public int PageOrDefault => Page ?? 1;
+
+    [BindNever]
     public int PageSizeOrDefault => PageSize ?? 10;
 }
