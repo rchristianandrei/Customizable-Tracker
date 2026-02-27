@@ -25,7 +25,12 @@ import { DeleteTracker } from "./DeleteTracker";
 import { SearchBox } from "@/components/inputs/SearchBox";
 
 export const CrudPage = () => {
-  const { trackers, loading, getParams, setParams } = useManageTracker();
+  const {
+    trackers,
+    loading,
+    queryParams: getParams,
+    setParams,
+  } = useManageTracker();
 
   const [deleteEvent, setDeleteEvent] = useState<{ tracker: Tracker } | null>(
     null,

@@ -11,7 +11,7 @@ export const ManageTrackerContext = createContext<
   | {
       trackers: PaginatedData<Tracker> | null;
       loading: boolean;
-      getParams: QueryParams;
+      queryParams: QueryParams;
       setParams: (params: (prev: QueryParams) => QueryParams) => void;
       createTracker: (data: {
         name: string;
@@ -41,7 +41,7 @@ export const ManageTrackerProvider = ({
   const loadTrackers = async () => {
     setLoading(true);
     try {
-      const params = getParams;
+      const params = queryParams;
       const trackers = await trackerRepo.getMine({
         ...params,
       });
@@ -53,7 +53,7 @@ export const ManageTrackerProvider = ({
     }
   };
 
-  const getParams = useMemo(
+  const queryParams = useMemo(
     (): QueryParams => ({
       query: searchParams.get("query") ?? "",
       page: Number(searchParams.get("page")),
@@ -97,7 +97,7 @@ export const ManageTrackerProvider = ({
       value={{
         trackers,
         loading,
-        getParams,
+        queryParams,
         setParams,
         createTracker,
         deleteTracker,
