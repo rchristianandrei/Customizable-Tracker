@@ -2,7 +2,6 @@ import { useState } from "react";
 import { Loader2, Trash2 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import {
   Card,
   CardContent,
@@ -23,6 +22,7 @@ import type { Tracker } from "@/types/tracker";
 import { CreateTracker } from "./CreateTracker";
 import { useManageTracker } from "./ManageTrackerProvider";
 import { DeleteTracker } from "./DeleteTracker";
+import { SearchBox } from "@/components/inputs/SearchBox";
 
 export const CrudPage = () => {
   const { trackers, loading, setPage } = useManageTracker();
@@ -36,11 +36,10 @@ export const CrudPage = () => {
       <div className="h-full flex flex-col gap-4">
         {/* Top Controls */}
         <div className="flex flex-col sm:flex-row gap-4 sm:justify-between">
-          <Input
-            id="search"
-            placeholder="Search..."
+          <SearchBox
             className="w-full sm:max-w-sm"
-          />
+            fetchData={(query) => console.log(query)}
+          ></SearchBox>
           <CreateTracker></CreateTracker>
         </div>
 
@@ -68,7 +67,7 @@ export const CrudPage = () => {
 
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="sm">
+                          <Button variant="ghost" size="sm" tabIndex={-1}>
                             ⋮
                           </Button>
                         </DropdownMenuTrigger>
