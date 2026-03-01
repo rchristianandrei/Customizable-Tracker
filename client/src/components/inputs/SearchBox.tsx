@@ -1,4 +1,4 @@
-import { useMemo, useEffect, useRef } from "react";
+import { useMemo, useEffect, useState } from "react";
 import { debounce } from "lodash";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
@@ -12,17 +12,17 @@ type Props = {
 };
 
 export function SearchBox({ fetchData, className, value }: Props) {
-  const input = useRef<HTMLInputElement>(null);
+  const [query, setQuery] = useState(value ?? "");
 
   useEffect(() => {
-    if (!input || !input.current) return;
-    input.current.value = value ?? "";
-  }, [input]);
+    debouncedSearch(query.trim());
+  }, [query]);
 
   const debouncedSearch = useMemo(
     () =>
       debounce((value: string) => {
         fetchData?.(value);
+        console.log("search!");
       }, 500),
     [fetchData],
   );
@@ -33,39 +33,31 @@ export function SearchBox({ fetchData, className, value }: Props) {
     };
   }, [debouncedSearch]);
 
-  const handleChange = (value: string) => {
-    const trimmed = value.trim();
-
-    if (trimmed === "") {
-      debouncedSearch.cancel();
-      fetchData?.(value);
-      return;
-    }
-
-    debouncedSearch(trimmed);
+  const onClearClicked = () => {
+    setQuery("");
+    debouncedSearch.cancel();
+    fetchData?.("");
   };
 
   return (
     <div className={cn("relative", className)}>
       <Input
-        ref={input}
         id="search"
         placeholder="Search..."
-        onChange={(e) => handleChange(e.target.value)}
+        value={query}
+        onChange={(e) => setQuery(e.target.value)}
       />
-      <Button
-        variant="link"
-        type="button"
-        tabIndex={-1}
-        className="absolute right-1 top-1/2 -translate-y-1/2"
-        onClick={() => {
-          if (!input.current?.value) return;
-          input.current.value = "";
-          handleChange("");
-        }}
-      >
-        <X className="h-4 hover:opacity-50" />
-      </Button>
+      {query && (
+        <Button
+          variant="link"
+          type="button"
+          tabIndex={-1}
+          className="absolute right-1 top-1/2 -translate-y-1/2"
+          onClick={onClearClicked}
+        >
+          <X className="h-4 hover:opacity-50" />
+        </Button>
+      )}
     </div>
   );
 }
