@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Loader2, Trash2 } from "lucide-react";
+import { Loader2, Trash2, ArrowRight } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -23,6 +23,7 @@ import { CreateTracker } from "./CreateTracker";
 import { useManageTracker } from "./ManageTrackerProvider";
 import { DeleteTracker } from "./DeleteTracker";
 import { SearchBox } from "@/components/inputs/SearchBox";
+import { Link } from "react-router-dom";
 
 export const CrudPage = () => {
   const {
@@ -91,10 +92,15 @@ export const CrudPage = () => {
                     </div>
                   </CardHeader>
 
-                  <CardContent>
+                  <CardContent className="flex items-center justify-between">
                     <p className="text-sm text-muted-foreground line-clamp-3">
                       {tracker.description || "No description provided."}
                     </p>
+                    <Link to={`${tracker.id}`} target="_blank">
+                      <Button type="button" className="cursor-pointer">
+                        <ArrowRight />
+                      </Button>
+                    </Link>
                   </CardContent>
                 </Card>
               ))}
