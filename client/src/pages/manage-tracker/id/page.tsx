@@ -1,6 +1,9 @@
-import { useParams } from "react-router-dom";
+import { Tracker } from "@/components/tracker/component";
 
 export const EditTracker = () => {
-  const { id } = useParams();
-  return <>Tracker: {id}</>;
+  return (
+    <main className="h-screen overflow-auto">
+      <Tracker />
+    </main>
+  );
 };
