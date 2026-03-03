@@ -2,14 +2,14 @@ import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 
 import type { PaginatedData } from "@/types/paginatedData";
-import type { Tracker } from "@/types/tracker";
+import type { TrackerType } from "@/types/tracker";
 
 import { trackerRepo } from "@/api/trackerRepo";
 import type { QueryParams } from "@/types/params";
 
 export const ManageTrackerContext = createContext<
   | {
-      trackers: PaginatedData<Tracker> | null;
+      trackers: PaginatedData<TrackerType> | null;
       loading: boolean;
       queryParams: QueryParams;
       setParams: (params: (prev: QueryParams) => QueryParams) => void;
@@ -31,7 +31,9 @@ export const ManageTrackerProvider = ({
   const navigate = useNavigate();
   const location = useLocation();
 
-  const [trackers, setTrackers] = useState<PaginatedData<Tracker> | null>(null);
+  const [trackers, setTrackers] = useState<PaginatedData<TrackerType> | null>(
+    null,
+  );
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {

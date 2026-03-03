@@ -1,4 +1,4 @@
-export type Tracker = {
+export type TrackerType = {
   id: number;
   name: string;
   description: string;

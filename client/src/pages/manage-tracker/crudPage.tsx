@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Badge } from "@/components/ui/badge";
 
-import type { Tracker } from "@/types/tracker";
+import type { TrackerType } from "@/types/tracker";
 
 import { CreateTracker } from "./CreateTracker";
 import { useManageTracker } from "./ManageTrackerProvider";
@@ -33,9 +33,9 @@ export const CrudPage = () => {
     setParams,
   } = useManageTracker();
 
-  const [deleteEvent, setDeleteEvent] = useState<{ tracker: Tracker } | null>(
-    null,
-  );
+  const [deleteEvent, setDeleteEvent] = useState<{
+    tracker: TrackerType;
+  } | null>(null);
 
   return (
     <>

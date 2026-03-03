@@ -23,7 +23,7 @@ namespace server.Controllers
         {
             var query = _context.Trackers.AsQueryable();
 
-            if(dto.Query != null) query = query.Where(t => t.Name.Contains(dto.Query) || t.Description.Contains(dto.Query));
+            if(dto.Query != null) query = query.Where(t => (t.Name.Contains(dto.Query) || t.Description.Contains(dto.Query) && t.UserEmail == _currentUserService.Email));
 
             var totalCount = await query.CountAsync();
             var trackers = await query
@@ -42,11 +42,17 @@ namespace server.Controllers
             });
         }
 
-        //[HttpGet("{id}")]
-        //public string Get(int id)
-        //{
-        //    return "value";
-        //}
+        [HttpGet("{id}")]
+        public async Task<IActionResult> Get(int id)
+        {
+            var tracker = await _context.Trackers.FindAsync(id);
+
+            if(tracker == null) return NotFound();
+            if (tracker.UserEmail != _currentUserService.Email) return Unauthorized();
+
+
+            return Ok(tracker.ToDto());
+        }
 
         [HttpPost]
         public async Task<IActionResult> Post([FromBody] CreateTrackerDto value)

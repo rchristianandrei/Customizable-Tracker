@@ -1,7 +1,8 @@
 import { Button } from "@/components/ui/button";
+import type { TrackerType } from "@/types/tracker";
 import { useState } from "react";
 
-export const Tracker = () => {
+export const Tracker = ({ tracker }: { tracker?: TrackerType }) => {
   const [onGoing, setOnGoing] = useState(false);
 
   const onStart = () => {
@@ -15,8 +16,10 @@ export const Tracker = () => {
   return (
     <div className="h-full max-w-150 border m-auto flex flex-col gap-1 p-1">
       <section className="text-center">
-        <h1 className="text-3xl font-bold">Tracker</h1>
-        <p>Description</p>
+        <h1 className="text-3xl font-bold">
+          {tracker ? tracker.name : "Tracker"}
+        </h1>
+        <p>{tracker ? tracker.description : "Description"}</p>
       </section>
       <section>
         <Button

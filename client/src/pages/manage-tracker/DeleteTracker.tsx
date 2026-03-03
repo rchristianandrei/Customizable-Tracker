@@ -12,14 +12,14 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { ButtonSpinner } from "@/components/spinners/ButtonSpinner";
-import type { Tracker } from "@/types/tracker";
+import type { TrackerType } from "@/types/tracker";
 import { useManageTracker } from "./ManageTrackerProvider";
 
 export function DeleteTracker({
   tracker,
   onClose,
 }: {
-  tracker?: Tracker;
+  tracker?: TrackerType;
   onClose: () => void;
 }) {
   const { deleteTracker } = useManageTracker();
