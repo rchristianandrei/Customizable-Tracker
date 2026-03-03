@@ -33,10 +33,8 @@ export const Tracker = ({ tracker }: { tracker?: TrackerType }) => {
         </Button>
       </section>
       <section className="flex-1 overflow-auto">
-        <div>Components</div>
-        <div>Components</div>
-        <div>Components</div>
-        <div>Components</div>
+        {tracker &&
+          tracker.components.map((c) => <div key={c.id}>{c.label}</div>)}
       </section>
       <section>
         <Button type="submit" onClick={onSubmit} className="w-full">

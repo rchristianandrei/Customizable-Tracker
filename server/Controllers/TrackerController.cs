@@ -45,9 +45,9 @@ namespace server.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(int id)
         {
-            var tracker = await _context.Trackers.FindAsync(id);
+            var tracker = await _context.Trackers.Include(t => t.Components).FirstOrDefaultAsync((t) => t.Id == id);
 
-            if(tracker == null) return NotFound();
+            if (tracker == null) return NotFound();
             if (tracker.UserEmail != _currentUserService.Email) return Unauthorized();
 
 

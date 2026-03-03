@@ -1,5 +1,7 @@
+import { componentRepo } from "@/api/componentRepo";
 import { trackerRepo } from "@/api/trackerRepo";
 import { TrackerSchema } from "@/components/zod/tracker";
+import type { TextboxComponent } from "@/types/textboxComponent";
 import type { TrackerType } from "@/types/tracker";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -32,6 +34,7 @@ export const EditTrackerContext = createContext<
         }
       >;
       updateTracker: () => void;
+      addComponent: () => Promise<void>;
     }
   | undefined
 >(undefined);
@@ -47,6 +50,10 @@ type ActionType =
   | {
       type: "setTracker";
       tracker: TrackerType | null;
+    }
+  | {
+      type: "addComponent";
+      component: TextboxComponent;
     };
 
 const reducer = (t: TrackerType | null, action: ActionType) => {
@@ -63,6 +70,10 @@ const reducer = (t: TrackerType | null, action: ActionType) => {
 
     case "setTracker":
       return action.tracker;
+
+    case "addComponent":
+      if (!t) return t;
+      return { ...t, components: [...t.components, action.component] };
   }
 };
 
@@ -133,6 +144,21 @@ export const EditTrackerProvider = ({
     }
   }, [tracker]);
 
+  const addComponent = useCallback(async () => {
+    if (!tracker) return;
+    setLoading(true);
+    try {
+      const component = await componentRepo.create({ trackerId: tracker.id });
+      dispatch({ type: "addComponent", component });
+      toast.success("Added a Textbox");
+    } catch (error: any) {
+      console.log(error);
+      toast.error("Unable to add the component");
+    } finally {
+      setLoading(false);
+    }
+  }, [tracker]);
+
   return (
     <EditTrackerContext
       value={{
@@ -140,6 +166,7 @@ export const EditTrackerProvider = ({
         loading,
         trackerForm,
         updateTracker,
+        addComponent,
       }}
     >
       {children}

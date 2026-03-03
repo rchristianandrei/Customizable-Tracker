@@ -21,5 +21,7 @@ public class Tracker
     [ForeignKey("UserEmail")]
     public User User { get; set; } = null!;
 
+    public ICollection<TextboxComponent> Components { get; set; } = [];
+
     public DateTime CreatedAt { get; set; }
 }

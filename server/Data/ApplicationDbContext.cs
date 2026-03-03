@@ -9,6 +9,9 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
 
     public DbSet<Tracker> Trackers { get; set; }
 
+    public DbSet<TextboxComponent> TextboxComponents { get; set; }
+
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
@@ -24,5 +27,13 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
         .HasOne(o => o.User)
         .WithMany(u => u.Trackers)
         .HasForeignKey(o => o.UserEmail);
+
+        modelBuilder.Entity<TextboxComponent>()
+        .HasOne(c => c.Tracker)
+        .WithMany(t => t.Components)
+        .HasForeignKey(c => c.TrackerId)
+        .OnDelete(DeleteBehavior.Cascade);
+
+        //modelBuilder.Entity<BaseComponent>().UseTptMappingStrategy();
     }
 }
