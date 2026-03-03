@@ -71,10 +71,21 @@ namespace server.Controllers
             return Ok(tracker.ToDto());
         }
 
-        //[HttpPut("{id}")]
-        //public void Put(int id, [FromBody] string value)
-        //{
-        //}
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Put(int id, [FromBody] UpdateTrackerDto dto)
+        {
+            var tracker = await _context.Trackers.FindAsync(id);
+
+            if (tracker == null) return NotFound();
+            if (tracker.UserEmail != _currentUserService.Email) return Unauthorized();
+
+            tracker.Name = dto.Name;
+            tracker.Description = dto.Description;
+
+            await _context.SaveChangesAsync();
+
+            return Ok(tracker.ToDto());
+        }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)

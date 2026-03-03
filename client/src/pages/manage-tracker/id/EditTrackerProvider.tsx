@@ -4,6 +4,7 @@ import type { TrackerType } from "@/types/tracker";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   createContext,
+  useCallback,
   useContext,
   useEffect,
   useReducer,
@@ -29,6 +30,7 @@ export const EditTrackerContext = createContext<
           description: string;
         }
       >;
+      updateTracker: () => void;
     }
   | undefined
 >(undefined);
@@ -96,7 +98,6 @@ export const EditTrackerProvider = ({
       trackerForm.setValue("description", tracker.description);
 
       trackerWatchRef.current = trackerForm.watch((value) => {
-        console.log(value);
         dispatch({
           type: "updateTracker",
           name: value.name,
@@ -114,12 +115,19 @@ export const EditTrackerProvider = ({
     };
   }, []);
 
+  const updateTracker = useCallback(async () => {
+    if (!tracker || Object.keys(trackerForm.formState.errors).length > 0)
+      return;
+    await trackerRepo.update(tracker);
+  }, [tracker]);
+
   return (
     <EditTrackerContext
       value={{
         tracker,
         loading,
         trackerForm,
+        updateTracker,
       }}
     >
       {children}

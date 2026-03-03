@@ -20,6 +20,13 @@ export const trackerRepo = {
     const res = await api.post<TrackerType>(`${controller}`, body);
     return res.data;
   },
+  update: async (tracker: TrackerType) => {
+    const res = await api.put<TrackerType>(
+      `${controller}/${tracker.id}`,
+      tracker,
+    );
+    return res.data;
+  },
   delete: async (id: number) => {
     const res = await api.delete(`${controller}/${id}`);
     return res.data;

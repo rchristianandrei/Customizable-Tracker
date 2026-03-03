@@ -12,9 +12,11 @@ import { Controller } from "react-hook-form";
 import { useEditTracker } from "./EditTrackerProvider";
 
 export const TrackerSettings = ({ className }: { className?: string }) => {
-  const { loading, trackerForm } = useEditTracker();
+  const { loading, trackerForm, updateTracker } = useEditTracker();
 
-  const onSubmit = () => {};
+  const onSubmit = () => {
+    updateTracker();
+  };
 
   return (
     <form
