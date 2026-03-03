@@ -13,6 +13,7 @@ import {
 } from "react";
 import { useForm, type UseFormReturn } from "react-hook-form";
 import { useParams } from "react-router-dom";
+import { toast } from "sonner";
 import type z from "zod";
 
 export const EditTrackerContext = createContext<
@@ -80,6 +81,7 @@ export const EditTrackerProvider = ({
 
   const trackerForm = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
+    mode: "onChange",
     defaultValues: {
       name: "",
       description: "",
@@ -116,9 +118,19 @@ export const EditTrackerProvider = ({
   }, []);
 
   const updateTracker = useCallback(async () => {
-    if (!tracker || Object.keys(trackerForm.formState.errors).length > 0)
+    if (!tracker || loading || !(await trackerForm.trigger())) {
+      toast.error("Error/s in your tracker");
       return;
-    await trackerRepo.update(tracker);
+    }
+    try {
+      setLoading(true);
+      await trackerRepo.update(tracker);
+      toast.success("Tracker Updated!");
+    } catch (error) {
+      toast.error("Unable to update the tracker");
+    } finally {
+      setLoading(false);
+    }
   }, [tracker]);
 
   return (

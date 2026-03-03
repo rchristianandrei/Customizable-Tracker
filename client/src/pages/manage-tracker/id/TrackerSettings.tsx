@@ -1,4 +1,3 @@
-import { Button } from "@/components/ui/button";
 import {
   Field,
   FieldError,
@@ -7,24 +6,16 @@ import {
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
-import { Loader2 } from "lucide-react";
 import { Controller } from "react-hook-form";
 import { useEditTracker } from "./EditTrackerProvider";
 
 export const TrackerSettings = ({ className }: { className?: string }) => {
-  const { loading, trackerForm, updateTracker } = useEditTracker();
-
-  const onSubmit = () => {
-    updateTracker();
-  };
+  const { loading, trackerForm } = useEditTracker();
 
   return (
-    <form
-      className={cn("flex flex-col gap-1", className)}
-      onSubmit={trackerForm.handleSubmit(onSubmit)}
-    >
+    <form className={cn("flex flex-col gap-1", className)}>
       <h2 className="text-center text-lg font-semibold">Tracker Settings</h2>
-      <div className="flex-1 overflow-auto flex flex-col gap-1">
+      <div className="flex-1 overflow-auto flex flex-col gap-1 px-1">
         {/* Name */}
         <FieldGroup>
           <Controller
@@ -72,13 +63,6 @@ export const TrackerSettings = ({ className }: { className?: string }) => {
           />
         </FieldGroup>
       </div>
-      {/* Buttons */}
-      <FieldGroup>
-        <Button type="submit" disabled={loading}>
-          {loading && <Loader2 className="h-4 w-4 animate-spin" />}
-          Save
-        </Button>
-      </FieldGroup>
     </form>
   );
 };

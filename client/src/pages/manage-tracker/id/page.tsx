@@ -6,6 +6,7 @@ import {
 import { TrackerSettings } from "./TrackerSettings";
 import { EditTrackerProvider } from "./EditTrackerProvider";
 import { Preview } from "./Preview";
+import { TrackerMenu } from "./TrackerMenu";
 
 export const EditTracker = () => {
   return (
@@ -34,6 +35,7 @@ export const EditTracker = () => {
             Component Settings
           </ResizablePanel>
         </ResizablePanelGroup>
+        <TrackerMenu />
       </main>
     </EditTrackerProvider>
   );
