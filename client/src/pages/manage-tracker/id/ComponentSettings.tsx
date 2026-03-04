@@ -10,9 +10,11 @@ import { Controller } from "react-hook-form";
 import { Input } from "@/components/ui/input";
 
 export const ComponentSettings = ({ className }: { className?: string }) => {
-  const { selectedComponent, textboxForm } = useEditTracker();
+  const { selectedComponent, trackerForm } = useEditTracker();
 
   if (!selectedComponent) return null;
+
+  const id = selectedComponent.id;
 
   return (
     <form className={cn("flex flex-col gap-1", className)}>
@@ -21,8 +23,8 @@ export const ComponentSettings = ({ className }: { className?: string }) => {
         {/* Label */}
         <FieldGroup className="">
           <Controller
-            name="label"
-            control={textboxForm.control}
+            name={`components.${id}.label`}
+            control={trackerForm.control}
             render={({ field, fieldState }) => (
               <Field data-invalid={fieldState.invalid} className="gap-1">
                 <FieldLabel htmlFor={field.name}>Label</FieldLabel>
@@ -43,8 +45,8 @@ export const ComponentSettings = ({ className }: { className?: string }) => {
         {/* Placeholder */}
         <FieldGroup className="">
           <Controller
-            name="placeholder"
-            control={textboxForm.control}
+            name={`components.${id}.placeholder`}
+            control={trackerForm.control}
             render={({ field, fieldState }) => (
               <Field data-invalid={fieldState.invalid} className="gap-1">
                 <FieldLabel htmlFor={field.name}>Placeholder</FieldLabel>
@@ -65,8 +67,8 @@ export const ComponentSettings = ({ className }: { className?: string }) => {
         {/* Required */}
         <FieldGroup className="">
           <Controller
-            name="required"
-            control={textboxForm.control}
+            name={`components.${id}.required`}
+            control={trackerForm.control}
             render={({ field, fieldState }) => (
               <Field
                 data-invalid={fieldState.invalid}
@@ -91,8 +93,8 @@ export const ComponentSettings = ({ className }: { className?: string }) => {
         {/* Max Length */}
         <FieldGroup className="">
           <Controller
-            name="maxLength"
-            control={textboxForm.control}
+            name={`components.${id}.maxLength`}
+            control={trackerForm.control}
             render={({ field, fieldState }) => (
               <Field data-invalid={fieldState.invalid} className="gap-1">
                 <FieldLabel htmlFor={field.name}>Max Length</FieldLabel>
