@@ -4,9 +4,10 @@ import {
   ResizablePanelGroup,
 } from "@/components/ui/resizable";
 import { TrackerSettings } from "./TrackerSettings";
-import { EditTrackerProvider } from "./EditTrackerProvider";
+import { EditTrackerProvider } from "./context/EditTrackerProvider";
 import { Preview } from "./Preview";
 import { TrackerMenu } from "./TrackerMenu";
+import { ComponentSettings } from "./ComponentSettings";
 
 export const EditTracker = () => {
   return (
@@ -32,7 +33,7 @@ export const EditTracker = () => {
             defaultSize={"20%"}
             maxSize={"30%"}
           >
-            Component Settings
+            <ComponentSettings />
           </ResizablePanel>
         </ResizablePanelGroup>
         <TrackerMenu />

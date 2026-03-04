@@ -7,7 +7,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { Controller } from "react-hook-form";
-import { useEditTracker } from "./EditTrackerProvider";
+import { useEditTracker } from "./context/useEditTracker";
 
 export const TrackerSettings = ({ className }: { className?: string }) => {
   const { loading, trackerForm } = useEditTracker();

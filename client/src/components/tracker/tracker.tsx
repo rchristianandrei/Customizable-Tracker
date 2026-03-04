@@ -2,7 +2,13 @@ import { Button } from "@/components/ui/button";
 import type { TrackerType } from "@/types/tracker";
 import { useState } from "react";
 
-export const Tracker = ({ tracker }: { tracker?: TrackerType }) => {
+export const Tracker = ({
+  tracker,
+  children,
+}: {
+  tracker?: TrackerType;
+  children: React.ReactNode;
+}) => {
   const [onGoing, setOnGoing] = useState(false);
 
   const onStart = () => {
@@ -32,10 +38,7 @@ export const Tracker = ({ tracker }: { tracker?: TrackerType }) => {
           {!onGoing && <span>Start</span>}
         </Button>
       </section>
-      <section className="flex-1 overflow-auto">
-        {tracker &&
-          tracker.components.map((c) => <div key={c.id}>{c.label}</div>)}
-      </section>
+      <section className="flex-1 overflow-auto">{children}</section>
       <section>
         <Button type="submit" onClick={onSubmit} className="w-full">
           Submit

@@ -1,5 +1,7 @@
 import z from "zod";
 
+export type TrackerFormValues = z.infer<ReturnType<typeof TrackerSchema>>;
+
 export const TrackerSchema = () =>
   z.object({
     name: z

@@ -1,12 +1,12 @@
 import { Save, Eye, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useEditTracker } from "./EditTrackerProvider";
 import { ButtonSpinner } from "@/components/spinners/ButtonSpinner";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { useEditTracker } from "./context/useEditTracker";
 
 export const TrackerMenu = () => {
   const { loading, updateTracker, addComponent } = useEditTracker();
