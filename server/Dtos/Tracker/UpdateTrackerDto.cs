@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using server.Dtos.Component;
+using System.ComponentModel.DataAnnotations;
 
 namespace server.Dtos.Tracker;
 
@@ -12,4 +13,6 @@ public class UpdateTrackerDto
 
     [MaxLength(30)]
     public string Description { get; set; } = string.Empty;
+
+    public List<UpdateTextboxDto> Components { get; set; } = [];
 }

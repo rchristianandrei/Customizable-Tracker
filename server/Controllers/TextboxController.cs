@@ -50,8 +50,19 @@ public class TextboxController(
         return Ok(texbox.ToDto());
     }
 
-    //[HttpPut("{id}")]
-    //public void Put(int id, [FromBody] string value)
-    //{
-    //}
+    [HttpPut("{id}")]
+    public async Task<IActionResult> Put(int id, [FromBody] UpdateTextboxDto value)
+    {
+        var textbox = await _context.TextboxComponents.FindAsync(id);
+        if (textbox == null) return NotFound();
+
+        textbox.Label = value.Label;
+        textbox.Placeholder = value.Placeholder;
+        textbox.Required = value.Required;
+        textbox.MaxLength = value.MaxLength;
+
+        await _context.SaveChangesAsync();
+
+        return Ok();
+    }
 }

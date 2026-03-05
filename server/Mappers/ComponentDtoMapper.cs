@@ -13,7 +13,6 @@ public static class ComponentDtoMapper
             Label = textbox.Label,
             Placeholder = textbox.Placeholder,
             Required = textbox.Required,
-            Order = textbox.Order,
             MaxLength = textbox.MaxLength,
         };
     }

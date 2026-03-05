@@ -21,6 +21,7 @@ builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<ICurrentUserService,CurrentUserService>();
 builder.Services.AddScoped<IJwtService, JwtService>();
+builder.Services.AddScoped<TextboxService>();
 
 // CORS
 var allowedOrigins = builder.Configuration

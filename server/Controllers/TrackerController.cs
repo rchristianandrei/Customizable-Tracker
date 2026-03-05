@@ -7,6 +7,7 @@ using server.Dtos.Tracker;
 using server.Interfaces;
 using server.Mappers;
 using server.Models;
+using server.Services;
 
 namespace server.Controllers
 {
@@ -15,7 +16,8 @@ namespace server.Controllers
     [ApiController]
     public class TrackerController(
         ApplicationDbContext _context,
-        ICurrentUserService _currentUserService
+        ICurrentUserService _currentUserService,
+        TextboxService _textboxService
     ) : ControllerBase
     {
         [HttpGet]
@@ -77,13 +79,21 @@ namespace server.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> Put(int id, [FromBody] UpdateTrackerDto dto)
         {
-            var tracker = await _context.Trackers.FindAsync(id);
+            var tracker = await _context.Trackers.Include(c => c.Components).FirstOrDefaultAsync(t => t.Id == id);
 
             if (tracker == null) return NotFound();
             if (tracker.UserEmail != _currentUserService.Email) return Unauthorized();
 
             tracker.Name = dto.Name;
             tracker.Description = dto.Description;
+
+            for(var i = 0; i < dto.Components.Count; i++)
+            {
+                var cDto = dto.Components[i];
+                var component = tracker.Components.FirstOrDefault(c => c.Id == cDto.Id);
+                if(component == null) continue;
+                _textboxService.Update(cDto, i, component);
+            }
 
             await _context.SaveChangesAsync();
 

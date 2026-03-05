@@ -1,11 +1,16 @@
-﻿namespace server.Dtos.Component;
+﻿using System.ComponentModel.DataAnnotations;
 
-public class TextboxDto
+namespace server.Dtos.Component;
+
+public class UpdateTextboxDto
 {
     public int Id { get; set; }
 
+    [Required]
+    [MaxLength(30)]
     public string Label { get; set; } = string.Empty;
 
+    [MaxLength(30)]
     public string Placeholder { get; set; } = string.Empty;
 
     public bool Required { get; set; } = false;

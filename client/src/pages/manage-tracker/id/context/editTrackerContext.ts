@@ -3,6 +3,7 @@ import type { TrackerType } from "@/types/tracker";
 import { createContext } from "react";
 import type { UseFormReturn } from "react-hook-form";
 import type { TrackerFormValues } from "../schemas/trackerSchema";
+import type { TextboxComponentValues } from "../schemas/textboxComponentSchema";
 
 export const EditTrackerContext = createContext<
   | {
@@ -10,6 +11,7 @@ export const EditTrackerContext = createContext<
       selectedComponent: TextboxComponent | null;
       loading: boolean;
       trackerForm: UseFormReturn<TrackerFormValues>;
+      textboxForm: UseFormReturn<TextboxComponentValues>;
       updateTracker: () => void;
       addComponent: () => Promise<void>;
       setSelectedComponent: (id: number | null) => void;

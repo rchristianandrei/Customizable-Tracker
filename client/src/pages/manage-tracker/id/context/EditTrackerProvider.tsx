@@ -9,9 +9,13 @@ import { useParams } from "react-router-dom";
 import { toast } from "sonner";
 import type z from "zod";
 import { EditTrackerContext } from "./editTrackerContext";
-import type { TextboxComponentValues } from "../schemas/textboxComponentSchema";
+import {
+  TextboxComponentSchema,
+  type TextboxComponentValues,
+} from "../schemas/textboxComponentSchema";
 
 const formSchema = TrackerSchema();
+const textboxSchema = TextboxComponentSchema();
 
 export const EditTrackerProvider = ({
   children,
@@ -24,6 +28,9 @@ export const EditTrackerProvider = ({
   );
   const [loading, setLoading] = useState(true);
   const trackerWatchRef = useRef<ReturnType<typeof trackerForm.watch> | null>(
+    null,
+  );
+  const textboxWatchRef = useRef<ReturnType<typeof textboxForm.watch> | null>(
     null,
   );
   const { id } = useParams();
@@ -41,6 +48,11 @@ export const EditTrackerProvider = ({
     },
   });
 
+  const textboxForm = useForm<TextboxComponentValues>({
+    resolver: zodResolver(textboxSchema),
+    mode: "onChange",
+  });
+
   useEffect(() => {
     const loadTracker = async (id: number) => {
       setLoading(true);
@@ -51,21 +63,6 @@ export const EditTrackerProvider = ({
 
       trackerForm.setValue("name", tracker.name);
       trackerForm.setValue("description", tracker.description);
-      trackerForm.setValue(
-        "components",
-        tracker.components.reduce(
-          (acc, c) => {
-            acc[c.id] = {
-              label: c.label,
-              placeholder: c.placeholder,
-              required: c.required,
-              maxLength: c.maxLength,
-            };
-            return acc;
-          },
-          {} as Record<string, TextboxComponentValues>,
-        ),
-      );
 
       trackerWatchRef.current = trackerForm.watch((value) => {
         setTracker((t) => {
@@ -74,18 +71,6 @@ export const EditTrackerProvider = ({
             ...t,
             ...(value.name && { name: value.name }),
             ...(value.description && { description: value.description }),
-            components: t.components.map((c) => {
-              if (!value.components) return c;
-              const comp = value.components[c.id];
-              if (!comp) return c;
-              return {
-                ...c,
-                ...(comp.label && { label: comp.label }),
-                ...(comp.placeholder && { placeholder: comp.placeholder }),
-                ...(comp.required && { required: comp.required }),
-                ...(comp.maxLength && { maxLength: comp.maxLength }),
-              };
-            }),
           };
         });
       });
@@ -97,6 +82,8 @@ export const EditTrackerProvider = ({
     return () => {
       trackerWatchRef.current?.unsubscribe();
       trackerWatchRef.current = null;
+      textboxWatchRef.current?.unsubscribe();
+      textboxWatchRef.current = null;
     };
   }, []);
 
@@ -134,9 +121,41 @@ export const EditTrackerProvider = ({
     }
   }, [tracker]);
 
-  const setSelectedComponent = useCallback((id: number | null) => {
-    setSelectedComponentId(id);
-  }, []);
+  const setSelectedComponent = useCallback(
+    (id: number | null) => {
+      if (!tracker) return;
+      textboxWatchRef.current?.unsubscribe();
+
+      setSelectedComponentId(id);
+      const component = tracker.components.find((c) => c.id === id);
+      if (!component) return;
+
+      textboxForm.setValue("label", component.label);
+      textboxForm.setValue("placeholder", component.placeholder);
+      textboxForm.setValue("required", component.required);
+      textboxForm.setValue("maxLength", component.maxLength);
+
+      textboxWatchRef.current = textboxForm.watch((values) => {
+        setTracker((t) => {
+          if (!t) return t;
+          return {
+            ...t,
+            components: t.components.map((c) => {
+              if (c.id !== component.id) return c;
+              return {
+                ...c,
+                ...(values.label && { label: values.label }),
+                ...(values.placeholder && { placeholder: values.placeholder }),
+                ...(values.required && { required: values.required }),
+                ...(values.maxLength && { maxLength: values.maxLength }),
+              };
+            }),
+          };
+        });
+      });
+    },
+    [tracker],
+  );
 
   return (
     <EditTrackerContext
@@ -145,6 +164,7 @@ export const EditTrackerProvider = ({
         selectedComponent,
         loading,
         trackerForm,
+        textboxForm,
         updateTracker,
         addComponent,
         setSelectedComponent,

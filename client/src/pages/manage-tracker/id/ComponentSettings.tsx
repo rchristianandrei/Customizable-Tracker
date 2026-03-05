@@ -8,13 +8,12 @@ import { cn } from "@/lib/utils";
 import { useEditTracker } from "./context/useEditTracker";
 import { Controller } from "react-hook-form";
 import { Input } from "@/components/ui/input";
+import { Checkbox } from "@/components/ui/checkbox";
 
 export const ComponentSettings = ({ className }: { className?: string }) => {
-  const { selectedComponent, trackerForm } = useEditTracker();
+  const { selectedComponent, textboxForm } = useEditTracker();
 
   if (!selectedComponent) return null;
-
-  const id = selectedComponent.id;
 
   return (
     <form className={cn("flex flex-col gap-1", className)}>
@@ -23,8 +22,8 @@ export const ComponentSettings = ({ className }: { className?: string }) => {
         {/* Label */}
         <FieldGroup className="">
           <Controller
-            name={`components.${id}.label`}
-            control={trackerForm.control}
+            name={`label`}
+            control={textboxForm.control}
             render={({ field, fieldState }) => (
               <Field data-invalid={fieldState.invalid} className="gap-1">
                 <FieldLabel htmlFor={field.name}>Label</FieldLabel>
@@ -45,8 +44,8 @@ export const ComponentSettings = ({ className }: { className?: string }) => {
         {/* Placeholder */}
         <FieldGroup className="">
           <Controller
-            name={`components.${id}.placeholder`}
-            control={trackerForm.control}
+            name={`placeholder`}
+            control={textboxForm.control}
             render={({ field, fieldState }) => (
               <Field data-invalid={fieldState.invalid} className="gap-1">
                 <FieldLabel htmlFor={field.name}>Placeholder</FieldLabel>
@@ -65,23 +64,30 @@ export const ComponentSettings = ({ className }: { className?: string }) => {
         </FieldGroup>
 
         {/* Required */}
-        <FieldGroup className="">
+        <FieldGroup className="flex-row gap-1">
           <Controller
-            name={`components.${id}.required`}
-            control={trackerForm.control}
+            name={`required`}
+            control={textboxForm.control}
             render={({ field, fieldState }) => (
-              <Field
-                data-invalid={fieldState.invalid}
-                className="flex gap-5 justify-start"
-              >
-                <FieldLabel htmlFor={field.name}>Required</FieldLabel>
-                <Input
-                  id={field.name}
-                  type="checkbox"
-                  aria-invalid={fieldState.invalid}
-                  autoComplete="on"
-                  className="h-5"
-                />
+              <Field>
+                <Field
+                  orientation="horizontal"
+                  data-invalid={fieldState.invalid}
+                >
+                  <FieldLabel
+                    htmlFor={field.name}
+                    className="text-sm leading-none"
+                  >
+                    Required
+                  </FieldLabel>
+                  <Checkbox
+                    id={field.name}
+                    name={field.name}
+                    aria-invalid={fieldState.invalid}
+                    checked={field.value}
+                    onCheckedChange={(checked) => field.onChange(checked)}
+                  />
+                </Field>
                 {fieldState.invalid && (
                   <FieldError errors={[fieldState.error]} />
                 )}
@@ -93,8 +99,8 @@ export const ComponentSettings = ({ className }: { className?: string }) => {
         {/* Max Length */}
         <FieldGroup className="">
           <Controller
-            name={`components.${id}.maxLength`}
-            control={trackerForm.control}
+            name={`maxLength`}
+            control={textboxForm.control}
             render={({ field, fieldState }) => (
               <Field data-invalid={fieldState.invalid} className="gap-1">
                 <FieldLabel htmlFor={field.name}>Max Length</FieldLabel>
