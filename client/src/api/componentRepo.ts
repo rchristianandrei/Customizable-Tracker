@@ -8,4 +8,8 @@ export const componentRepo = {
     const res = await api.post<TextboxComponent>(`${controller}`, body);
     return res.data;
   },
+  delete: async (id: number) => {
+    const res = await api.delete<TextboxComponent>(`${controller}/${id}`);
+    return res.data;
+  },
 };

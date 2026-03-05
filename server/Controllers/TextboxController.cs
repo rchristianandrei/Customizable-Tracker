@@ -65,4 +65,17 @@ public class TextboxController(
 
         return Ok();
     }
+
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> Delete(int id)
+    {
+        var textbox = await _context.TextboxComponents.FindAsync(id);
+
+        if (textbox == null) return NotFound();
+
+        _context.TextboxComponents.Remove(textbox);
+        await _context.SaveChangesAsync();
+
+        return NoContent();
+    }
 }

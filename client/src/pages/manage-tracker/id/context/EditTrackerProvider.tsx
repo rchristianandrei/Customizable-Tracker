@@ -121,6 +121,31 @@ export const EditTrackerProvider = ({
     }
   }, [tracker]);
 
+  const deleteComponent = useCallback(
+    async (id: number) => {
+      if (loading) return;
+
+      setLoading(true);
+
+      try {
+        await componentRepo.delete(id);
+        setTracker((t) => {
+          if (!t) return t;
+          return {
+            ...t,
+            components: t.components.filter((c) => c.id !== id),
+          };
+        });
+        toast.success("Deleted the component");
+      } catch (error) {
+        toast.error("Unable to delete the component");
+      } finally {
+        setLoading(false);
+      }
+    },
+    [loading],
+  );
+
   const setSelectedComponent = useCallback(
     (id: number | null) => {
       if (!tracker) return;
@@ -167,6 +192,7 @@ export const EditTrackerProvider = ({
         textboxForm,
         updateTracker,
         addComponent,
+        deleteComponent,
         setSelectedComponent,
       }}
     >
