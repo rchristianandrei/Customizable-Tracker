@@ -8,6 +8,7 @@ import { EditTrackerProvider } from "./context/EditTrackerProvider";
 import { Preview } from "./Preview";
 import { TrackerMenu } from "./TrackerMenu";
 import { ComponentSettings } from "./ComponentSettings";
+import { Loading } from "./Loading";
 
 export const EditTracker = () => {
   return (
@@ -38,6 +39,7 @@ export const EditTracker = () => {
         </ResizablePanelGroup>
         <TrackerMenu />
       </main>
+      <Loading />
     </EditTrackerProvider>
   );
 };

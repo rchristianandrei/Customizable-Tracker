@@ -26,7 +26,10 @@ export const EditTrackerProvider = ({
   const [selectedComponentId, setSelectedComponentId] = useState<number | null>(
     null,
   );
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState<{ state: boolean; message?: string }>({
+    state: true,
+    message: "Loading Tracker",
+  });
   const trackerWatchRef = useRef<ReturnType<typeof trackerForm.watch> | null>(
     null,
   );
@@ -55,7 +58,7 @@ export const EditTrackerProvider = ({
 
   useEffect(() => {
     const loadTracker = async (id: number) => {
-      setLoading(true);
+      setLoading({ state: true, message: "Loading Tracker" });
 
       const tracker = await trackerRepo.getById(id);
 
@@ -69,13 +72,15 @@ export const EditTrackerProvider = ({
           if (!t) return t;
           return {
             ...t,
-            ...(value.name && { name: value.name }),
-            ...(value.description && { description: value.description }),
+            ...(value.name && { name: value.name.trim() }),
+            ...(value.description && { description: value.description.trim() }),
           };
         });
       });
 
-      setLoading(() => false);
+      setLoading(() => ({
+        state: false,
+      }));
     };
     loadTracker(Number(id));
 
@@ -88,24 +93,25 @@ export const EditTrackerProvider = ({
   }, []);
 
   const updateTracker = useCallback(async () => {
-    if (!tracker || loading || !(await trackerForm.trigger())) {
+    if (loading.state || !tracker) return;
+    if (!(await trackerForm.trigger())) {
       toast.error("Error/s in your tracker");
       return;
     }
     try {
-      setLoading(true);
+      setLoading({ state: true, message: "Saving Tracker" });
       await trackerRepo.update(tracker);
       toast.success("Tracker Updated!");
     } catch (error) {
       toast.error("Unable to update the tracker");
     } finally {
-      setLoading(false);
+      setLoading({ state: false });
     }
   }, [tracker]);
 
   const addComponent = useCallback(async () => {
-    if (!tracker) return;
-    setLoading(true);
+    if (loading.state || !tracker) return;
+    setLoading({ state: true, message: "Adding Component" });
     try {
       const component = await componentRepo.create({ trackerId: tracker.id });
       setTracker((t) => {
@@ -117,15 +123,15 @@ export const EditTrackerProvider = ({
       console.log(error);
       toast.error("Unable to add the component");
     } finally {
-      setLoading(false);
+      setLoading({ state: false });
     }
   }, [tracker]);
 
   const deleteComponent = useCallback(
     async (id: number) => {
-      if (loading) return;
+      if (loading.state) return;
 
-      setLoading(true);
+      setLoading({ state: true, message: "Deleting Component" });
 
       try {
         await componentRepo.delete(id);
@@ -140,7 +146,7 @@ export const EditTrackerProvider = ({
       } catch (error) {
         toast.error("Unable to delete the component");
       } finally {
-        setLoading(false);
+        setLoading({ state: false });
       }
     },
     [loading],
@@ -169,8 +175,8 @@ export const EditTrackerProvider = ({
               if (c.id !== component.id) return c;
               return {
                 ...c,
-                ...(values.label && { label: values.label }),
-                ...(values.placeholder && { placeholder: values.placeholder }),
+                ...(values.label && { label: values.label.trim() }),
+                placeholder: values.placeholder?.trim() ?? "",
                 ...(values.required && { required: values.required }),
                 ...(values.maxLength && { maxLength: values.maxLength }),
               };

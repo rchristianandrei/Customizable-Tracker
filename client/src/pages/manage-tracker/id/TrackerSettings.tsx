@@ -10,7 +10,7 @@ import { Controller } from "react-hook-form";
 import { useEditTracker } from "./context/useEditTracker";
 
 export const TrackerSettings = ({ className }: { className?: string }) => {
-  const { loading, trackerForm } = useEditTracker();
+  const { trackerForm } = useEditTracker();
 
   return (
     <form className={cn("flex flex-col gap-1", className)}>
@@ -20,7 +20,6 @@ export const TrackerSettings = ({ className }: { className?: string }) => {
         <FieldGroup>
           <Controller
             name="name"
-            disabled={loading}
             control={trackerForm.control}
             render={({ field, fieldState }) => (
               <Field data-invalid={fieldState.invalid} className="gap-1">
@@ -30,7 +29,6 @@ export const TrackerSettings = ({ className }: { className?: string }) => {
                   id={field.name}
                   aria-invalid={fieldState.invalid}
                   autoComplete="off"
-                  maxLength={30}
                 />
                 {fieldState.invalid && (
                   <FieldError errors={[fieldState.error]} />
@@ -43,7 +41,6 @@ export const TrackerSettings = ({ className }: { className?: string }) => {
         <FieldGroup>
           <Controller
             name="description"
-            disabled={loading}
             control={trackerForm.control}
             render={({ field, fieldState }) => (
               <Field data-invalid={fieldState.invalid} className="gap-1">
@@ -53,7 +50,6 @@ export const TrackerSettings = ({ className }: { className?: string }) => {
                   id={field.name}
                   aria-invalid={fieldState.invalid}
                   autoComplete="off"
-                  maxLength={30}
                 />
                 {fieldState.invalid && (
                   <FieldError errors={[fieldState.error]} />

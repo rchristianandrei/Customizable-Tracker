@@ -9,7 +9,10 @@ export const EditTrackerContext = createContext<
   | {
       tracker: TrackerType | null;
       selectedComponent: TextboxComponent | null;
-      loading: boolean;
+      loading: {
+        state: boolean;
+        message?: string;
+      };
       trackerForm: UseFormReturn<TrackerFormValues>;
       textboxForm: UseFormReturn<TextboxComponentValues>;
       updateTracker: () => void;
