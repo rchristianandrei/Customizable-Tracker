@@ -19,6 +19,7 @@ export const EditTrackerContext = createContext<
       addComponent: () => Promise<void>;
       deleteComponent: (id: number) => Promise<void>;
       setSelectedComponent: (id: number | null) => void;
+      setComponents: (components: TextboxComponent[]) => void;
     }
   | undefined
 >(undefined);

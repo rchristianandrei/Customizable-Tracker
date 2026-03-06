@@ -13,6 +13,7 @@ import {
   TextboxComponentSchema,
   type TextboxComponentValues,
 } from "../schemas/textboxComponentSchema";
+import type { TextboxComponent } from "@/types/textboxComponent";
 
 const formSchema = TrackerSchema();
 const textboxSchema = TextboxComponentSchema();
@@ -152,6 +153,13 @@ export const EditTrackerProvider = ({
     [loading],
   );
 
+  const setComponents = useCallback((components: TextboxComponent[]) => {
+    setTracker((t) => {
+      if (!t) return t;
+      return { ...t, components };
+    });
+  }, []);
+
   const setSelectedComponent = useCallback(
     (id: number | null) => {
       if (!tracker) return;
@@ -200,6 +208,7 @@ export const EditTrackerProvider = ({
         addComponent,
         deleteComponent,
         setSelectedComponent,
+        setComponents,
       }}
     >
       {children}
