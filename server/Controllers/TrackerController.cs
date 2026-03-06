@@ -87,13 +87,17 @@ namespace server.Controllers
             tracker.Name = dto.Name;
             tracker.Description = dto.Description;
 
+            List<TextboxComponent> newOrder = [];
             for(var i = 0; i < dto.Components.Count; i++)
             {
                 var cDto = dto.Components[i];
                 var component = tracker.Components.FirstOrDefault(c => c.Id == cDto.Id);
                 if(component == null) continue;
                 _textboxService.Update(cDto, i, component);
+                newOrder.Add(component);
             }
+
+            tracker.Components = newOrder;
 
             await _context.SaveChangesAsync();
 
