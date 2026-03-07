@@ -7,10 +7,12 @@ import {
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { Controller } from "react-hook-form";
-import { useEditTracker } from "./context/useEditTracker";
+import { useEditTrackerState } from "./context/useEditTrackerProviders";
 
 export const TrackerSettings = ({ className }: { className?: string }) => {
-  const { trackerForm } = useEditTracker();
+  const { trackerForm, showSettings } = useEditTrackerState();
+
+  if (!showSettings) return;
 
   return (
     <form className={cn("flex flex-col gap-1", className)}>

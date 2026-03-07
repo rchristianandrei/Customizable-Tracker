@@ -6,12 +6,12 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { useEditTracker } from "./context/useEditTracker";
+import { useEditTrackerState } from "./context/useEditTrackerProviders";
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import { Loader2 } from "lucide-react";
 
 export const Loading = () => {
-  const { loading } = useEditTracker();
+  const { loading } = useEditTrackerState();
 
   return (
     <Dialog open={loading.state}>

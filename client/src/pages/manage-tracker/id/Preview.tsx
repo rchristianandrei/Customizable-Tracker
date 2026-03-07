@@ -1,5 +1,8 @@
 import { Tracker } from "@/components/tracker/tracker";
-import { useEditTracker } from "./context/useEditTracker";
+import {
+  useEditTrackerAction,
+  useEditTrackerState,
+} from "./context/useEditTrackerProviders";
 import {
   Sortable,
   SortableContent,
@@ -15,20 +18,17 @@ import {
   ContextMenuTrigger,
 } from "@/components/ui/context-menu";
 import { Textbox } from "@/components/tracker/components/textbox";
+import { cn } from "@/lib/utils";
 
 export const Preview = () => {
-  const {
-    tracker,
-    selectedComponent,
-    setSelectedComponent,
-    deleteComponent,
-    setComponents,
-  } = useEditTracker();
+  const { tracker, selectedComponent, showSettings } = useEditTrackerState();
+  const { setSelectedComponent, deleteComponent, setComponents } =
+    useEditTrackerAction();
 
   if (!tracker) return;
 
   return (
-    <section className="h-full py-20">
+    <section className={cn("h-full py-20", showSettings ? "" : "py-10")}>
       <Tracker tracker={tracker}>
         {tracker.components && (
           <Sortable
@@ -44,11 +44,17 @@ export const Preview = () => {
                 {tracker.components.map((component) => (
                   <SortableItem key={component.id} value={component.id} asChild>
                     <div className="flex items-center">
-                      <SortableItemHandle asChild>
-                        <Button variant="ghost" size="icon" className="size-8">
-                          <GripVertical className="h-4 w-4" />
-                        </Button>
-                      </SortableItemHandle>
+                      {showSettings && (
+                        <SortableItemHandle asChild>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="size-8"
+                          >
+                            <GripVertical className="h-4 w-4" />
+                          </Button>
+                        </SortableItemHandle>
+                      )}
                       <ContextMenu
                         onOpenChange={(open) => {
                           if (!open) return;
@@ -61,7 +67,10 @@ export const Preview = () => {
                           >
                             <Textbox
                               component={component}
-                              selected={selectedComponent?.id === component.id}
+                              selected={
+                                showSettings &&
+                                selectedComponent?.id === component.id
+                              }
                             />
                           </div>
                         </ContextMenuTrigger>

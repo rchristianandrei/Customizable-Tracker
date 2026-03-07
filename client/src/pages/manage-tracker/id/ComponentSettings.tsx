@@ -5,15 +5,16 @@ import {
   FieldLabel,
 } from "@/components/ui/field";
 import { cn } from "@/lib/utils";
-import { useEditTracker } from "./context/useEditTracker";
+import { useEditTrackerState } from "./context/useEditTrackerProviders";
 import { Controller } from "react-hook-form";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 
 export const ComponentSettings = ({ className }: { className?: string }) => {
-  const { selectedComponent, textboxForm } = useEditTracker();
+  const { selectedComponent, showSettings, textboxForm } =
+    useEditTrackerState();
 
-  if (!selectedComponent) return null;
+  if (!selectedComponent || !showSettings) return null;
 
   return (
     <form className={cn("flex flex-col gap-1", className)}>
