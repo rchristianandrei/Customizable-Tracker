@@ -12,8 +12,8 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { ButtonSpinner } from "@/components/spinners/ButtonSpinner";
-import { useAuth } from "@/contexts/AuthProvider";
 import { toast } from "sonner";
+import { useUserStore } from "@/store/useUserStore";
 
 export function Logout({
   open,
@@ -22,7 +22,7 @@ export function Logout({
   open: boolean;
   onClose: () => void;
 }) {
-  const { logout } = useAuth();
+  const logout = useUserStore((state) => state.logout);
   const [loading, setLoading] = useState(false);
 
   const onConfirmClick = async () => {

@@ -14,11 +14,11 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
-import { useAuth } from "@/contexts/AuthProvider";
 import { Logout } from "./logout";
+import { useUserStore } from "@/store/useUserStore";
 
 export function NavUser() {
-  const { user } = useAuth();
+  const user = useUserStore((state) => state.user);
   const { isMobile } = useSidebar();
 
   const [open, setOpen] = useState(false);

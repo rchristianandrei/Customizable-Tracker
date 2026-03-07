@@ -1,8 +1,11 @@
 import { Navigate, Outlet } from "react-router-dom";
-import { useAuth } from "@/contexts/AuthProvider";
+import { useUserStore } from "@/store/useUserStore";
+import { useShallow } from "zustand/shallow";
 
 export const PublicRoute = () => {
-  const { user, loading } = useAuth();
+  const { user, loading } = useUserStore(
+    useShallow((state) => ({ user: state.user, loading: state.loading })),
+  );
 
   if (loading) return <div>Loading</div>;
 

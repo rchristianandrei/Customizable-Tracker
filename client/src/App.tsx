@@ -6,16 +6,22 @@ import { Dashboard } from "@/pages/dashboard/page";
 import { ManageTracker } from "@/pages/manage-tracker/page";
 import { EditTracker } from "@/pages/manage-tracker/id/page";
 
-import { AuthProvider } from "@/contexts/AuthProvider";
-
 import { PublicRoute } from "@/guards/PublicRoute";
 import { PrivateRoute } from "@/guards/PrivateRoute";
 
 import { Toaster } from "@/components/ui/sonner";
+import { useEffect } from "react";
+import { useUserStore } from "./store/useUserStore";
 
 function App() {
+  const fetchUser = useUserStore((state) => state.fetchUser);
+
+  useEffect(() => {
+    fetchUser();
+  }, []);
+
   return (
-    <AuthProvider>
+    <>
       <BrowserRouter>
         <Routes>
           <Route element={<PublicRoute></PublicRoute>}>
@@ -40,7 +46,7 @@ function App() {
           },
         }}
       />
-    </AuthProvider>
+    </>
   );
 }
 
