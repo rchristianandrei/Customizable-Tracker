@@ -11,7 +11,7 @@ export const Tracker = ({
   tracker?: TrackerType;
   children: React.ReactNode;
   onStartEvent?: () => void;
-  onSubmitEvent?: () => void;
+  onSubmitEvent?: () => boolean | Promise<boolean>;
 }) => {
   const [onGoing, setOnGoing] = useState(false);
 
@@ -20,9 +20,12 @@ export const Tracker = ({
     onStartEvent?.();
   };
 
-  const onSubmit = () => {
-    onSubmitEvent?.();
-    setOnGoing(false);
+  const onSubmit = async () => {
+    if (onSubmitEvent) {
+      setOnGoing(!(await onSubmitEvent()));
+    } else {
+      setOnGoing(false);
+    }
   };
 
   return (
