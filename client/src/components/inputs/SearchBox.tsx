@@ -22,7 +22,6 @@ export function SearchBox({ fetchData, className, value }: Props) {
     () =>
       debounce((value: string) => {
         fetchData?.(value);
-        console.log("search!");
       }, 500),
     [fetchData],
   );

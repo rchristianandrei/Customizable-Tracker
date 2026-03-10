@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 
 import { Login } from "@/pages/login/page";
@@ -5,13 +6,13 @@ import { Register } from "@/pages/register/page";
 import { Dashboard } from "@/pages/dashboard/page";
 import { ManageTracker } from "@/pages/manage-tracker/page";
 import { EditTracker } from "@/pages/manage-tracker/id/page";
+import { SubtmitTracker } from "@/pages/submit-tracker/page";
 
 import { PublicRoute } from "@/guards/PublicRoute";
 import { PrivateRoute } from "@/guards/PrivateRoute";
 
 import { Toaster } from "@/components/ui/sonner";
-import { useEffect } from "react";
-import { useUserStore } from "./store/useUserStore";
+import { useUserStore } from "@/store/useUserStore";
 
 function App() {
   const fetchUser = useUserStore((state) => state.fetchUser);
@@ -29,6 +30,12 @@ function App() {
             <Route path="/register" element={<Register></Register>}></Route>
           </Route>
           <Route element={<PrivateRoute></PrivateRoute>}>
+            <Route path="/submit-tracker">
+              <Route
+                path=""
+                element={<SubtmitTracker></SubtmitTracker>}
+              ></Route>
+            </Route>
             <Route path="/manage-tracker">
               <Route path="" element={<ManageTracker></ManageTracker>}></Route>
               <Route path=":id" element={<EditTracker></EditTracker>}></Route>
