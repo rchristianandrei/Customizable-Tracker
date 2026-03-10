@@ -188,7 +188,7 @@ export const useEditTracker = (): {
                 ...c,
                 ...(values.label && { label: values.label.trim() }),
                 placeholder: values.placeholder?.trim() ?? "",
-                ...(values.required && { required: values.required }),
+                required: values.required ?? false,
                 ...(values.maxLength && { maxLength: values.maxLength }),
               };
             }),

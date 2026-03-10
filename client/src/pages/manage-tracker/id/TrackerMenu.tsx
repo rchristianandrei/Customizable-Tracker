@@ -9,6 +9,12 @@ import {
   useEditTrackerAction,
   useEditTrackerState,
 } from "./context/useEditTrackerProviders";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 export const TrackerMenu = () => {
   const { showSettings } = useEditTrackerState();
@@ -16,33 +22,60 @@ export const TrackerMenu = () => {
     useEditTrackerAction();
 
   return (
-    <section className="absolute bottom-2 left-1/2 -translate-x-1/2 p-1 border bg-background rounded flex flex-row gap-1">
-      <Button type="button" onClick={updateTracker}>
-        <Save />
-      </Button>
-      <Button
-        type="button"
-        variant="outline"
-        onClick={() => toggleSettings(!showSettings)}
-      >
-        {showSettings && <Eye />}
-        {!showSettings && <EyeClosed />}
-      </Button>
-      <Popover>
-        <PopoverTrigger asChild>
-          <Button variant="outline">
-            <Plus />
-          </Button>
-        </PopoverTrigger>
-        <PopoverContent className="flex flex-col gap-1 w-40">
-          <Button type="button" variant="outline" onClick={addComponent}>
-            Textbox
-          </Button>
-          <Button type="button" variant="outline">
-            Dropdownbox
-          </Button>
-        </PopoverContent>
-      </Popover>
-    </section>
+    <TooltipProvider>
+      <section className="absolute bottom-2 left-1/2 -translate-x-1/2 p-1 border bg-background rounded flex flex-row gap-1">
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button type="button" onClick={updateTracker}>
+              <Save />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>Save Tracker</p>
+          </TooltipContent>
+        </Tooltip>
+
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => toggleSettings(!showSettings)}
+            >
+              {showSettings && <Eye />}
+              {!showSettings && <EyeClosed />}
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>Toggle Edit Visibility</p>
+          </TooltipContent>
+        </Tooltip>
+
+        <Tooltip>
+          <Popover>
+            <TooltipTrigger asChild>
+              <PopoverTrigger asChild>
+                <Button variant="outline">
+                  <Plus />
+                </Button>
+              </PopoverTrigger>
+            </TooltipTrigger>
+
+            <PopoverContent className="flex flex-col gap-1 w-40">
+              <Button type="button" variant="outline" onClick={addComponent}>
+                Textbox
+              </Button>
+              <Button type="button" variant="outline">
+                Dropdownbox
+              </Button>
+            </PopoverContent>
+          </Popover>
+
+          <TooltipContent>
+            <p>Add Component</p>
+          </TooltipContent>
+        </Tooltip>
+      </section>
+    </TooltipProvider>
   );
 };

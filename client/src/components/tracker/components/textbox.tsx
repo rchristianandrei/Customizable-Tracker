@@ -21,7 +21,10 @@ export const Textbox = ({
       )}
     >
       <Field className="gap-1">
-        <FieldLabel htmlFor={id}>{component.label}</FieldLabel>
+        <FieldLabel htmlFor={id} className="flex justify-between">
+          <span>{component.label}</span>
+          {component.required && <span className="text-red-300">*</span>}
+        </FieldLabel>
         <Input
           id={id}
           placeholder={component.placeholder}
