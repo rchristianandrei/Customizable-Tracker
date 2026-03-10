@@ -1,137 +1,37 @@
-import { useState } from "react";
-import { Loader2, ArrowRight } from "lucide-react";
-
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-
-import type { TrackerType } from "@/types/tracker";
-
 import { SearchBox } from "@/components/inputs/SearchBox";
-import { Link } from "react-router-dom";
 import { useSubmitTracker } from "./provider/SubmitTrackerProvider";
+import { TrackerGrid } from "@/components/crud/TrackerGrid";
+import { ResultCount } from "@/components/crud/ResultCount";
+import { Pagination } from "@/components/crud/Pagination";
 
 export const CrudPage = () => {
-  const {
-    trackers,
-    loading,
-    queryParams: getParams,
-    setParams,
-  } = useSubmitTracker();
+  const { trackers, loading, queryParams, setParams } = useSubmitTracker();
 
   return (
     <>
       <div className="h-full flex flex-col gap-4">
-        {/* Top Controls */}
         <div className="flex flex-col sm:flex-row gap-4 sm:justify-between">
           <SearchBox
             className="w-full sm:max-w-sm"
-            value={getParams.query}
+            value={queryParams.query}
             fetchData={(query) =>
               setParams((p) => ({ ...p, query: query ?? "" }))
             }
-          ></SearchBox>
+          />
         </div>
 
-        {/* Card Grid */}
-        <div className="flex-1 overflow-auto relative">
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {trackers &&
-              trackers.data.map((tracker) => (
-                <Card key={tracker.id} className="relative">
-                  <CardHeader>
-                    <div className="">
-                      <CardTitle>{tracker.name}</CardTitle>
-                      <CardDescription>
-                        {new Date(tracker.createdAt).toLocaleDateString(
-                          "en-US",
-                          {
-                            month: "short",
-                            day: "2-digit",
-                            year: "numeric",
-                          },
-                        )}
-                      </CardDescription>
-                    </div>
-                  </CardHeader>
+        <TrackerGrid trackers={trackers?.data} loading={loading} />
 
-                  <CardContent className="flex items-center justify-between">
-                    <p className="text-sm text-muted-foreground line-clamp-3">
-                      {tracker.description || "No description provided."}
-                    </p>
-                    <Link to={`${tracker.id}`} target="_blank">
-                      <Button type="button" className="cursor-pointer">
-                        <ArrowRight />
-                      </Button>
-                    </Link>
-                  </CardContent>
-                </Card>
-              ))}
-          </div>
-          {/* Empty State */}
-          {!loading && trackers && trackers.data.length === 0 && (
-            <div className="text-center text-muted-foreground">
-              No results found.
-            </div>
-          )}
-          {loading && (
-            <div className="absolute inset-0 flex justify-center items-center">
-              <Loader2 className="h-10 w-10 animate-spin" />
-            </div>
-          )}
-        </div>
+        {trackers && <ResultCount count={trackers.data.length} />}
 
-        {/* Count */}
-        <div className="flex items-center justify-center">
-          <div className="flex items-center gap-2">
-            {trackers && (
-              <Badge variant="secondary" className="px-3 py-1">
-                {trackers.data.length} result
-                {trackers.data.length !== 1 && "s"}
-              </Badge>
-            )}
-          </div>
-        </div>
-
-        {/* Pagination */}
-        <div className="flex justify-center gap-2">
-          {trackers && (
-            <>
-              <Button
-                variant="outline"
-                disabled={trackers.page === 1}
-                onClick={() =>
-                  setParams((p) => ({ ...p, page: trackers.page - 1 }))
-                }
-              >
-                Prev
-              </Button>
-
-              <span className="flex items-center px-4 text-sm">
-                Page {trackers.page} of {trackers.totalPages}
-              </span>
-
-              <Button
-                variant="outline"
-                disabled={
-                  trackers.page === trackers.totalPages ||
-                  trackers.totalPages === 0
-                }
-                onClick={() =>
-                  setParams((p) => ({ ...p, page: trackers.page + 1 }))
-                }
-              >
-                Next
-              </Button>
-            </>
-          )}
-        </div>
+        {trackers && (
+          <Pagination
+            page={trackers.page}
+            totalPages={trackers.totalPages}
+            onPrev={() => setParams((p) => ({ ...p, page: trackers.page - 1 }))}
+            onNext={() => setParams((p) => ({ ...p, page: trackers.page + 1 }))}
+          />
+        )}
       </div>
     </>
   );
