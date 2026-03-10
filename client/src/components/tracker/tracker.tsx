@@ -5,17 +5,23 @@ import { useState } from "react";
 export const Tracker = ({
   tracker,
   children,
+  onStartEvent,
+  onSubmitEvent,
 }: {
   tracker?: TrackerType;
   children: React.ReactNode;
+  onStartEvent?: () => void;
+  onSubmitEvent?: () => void;
 }) => {
   const [onGoing, setOnGoing] = useState(false);
 
   const onStart = () => {
     setOnGoing(true);
+    onStartEvent?.();
   };
 
   const onSubmit = () => {
+    onSubmitEvent?.();
     setOnGoing(false);
   };
 
@@ -40,7 +46,12 @@ export const Tracker = ({
       </section>
       <section className="flex-1 overflow-auto">{children}</section>
       <section>
-        <Button type="submit" onClick={onSubmit} className="w-full">
+        <Button
+          type="submit"
+          onClick={onSubmit}
+          className="w-full"
+          disabled={!onGoing}
+        >
           Submit
         </Button>
       </section>

@@ -13,6 +13,7 @@ import { PrivateRoute } from "@/guards/PrivateRoute";
 
 import { Toaster } from "@/components/ui/sonner";
 import { useUserStore } from "@/store/useUserStore";
+import { AnswerTracker } from "./pages/submit-tracker/id/page";
 
 function App() {
   const fetchUser = useUserStore((state) => state.fetchUser);
@@ -34,6 +35,10 @@ function App() {
               <Route
                 path=""
                 element={<SubtmitTracker></SubtmitTracker>}
+              ></Route>
+              <Route
+                path=":id"
+                element={<AnswerTracker></AnswerTracker>}
               ></Route>
             </Route>
             <Route path="/manage-tracker">
