@@ -6,7 +6,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { Link } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 
 const navMain = [
   {
@@ -33,12 +33,18 @@ export function NavMain() {
       <SidebarMenu>
         {navMain.map((item) => (
           <SidebarMenuItem key={item.title}>
-            <Link to={item.url}>
-              <SidebarMenuButton tooltip={item.title}>
-                {item.icon && <item.icon />}
-                <span>{item.title}</span>
-              </SidebarMenuButton>
-            </Link>
+            <NavLink to={item.url}>
+              {({ isActive }) => (
+                <SidebarMenuButton
+                  tooltip={item.title}
+                  data-active={isActive}
+                  className="border border-transparent data-[active=true]:border-sidebar-primary"
+                >
+                  {item.icon && <item.icon />}
+                  <span>{item.title}</span>
+                </SidebarMenuButton>
+              )}
+            </NavLink>
           </SidebarMenuItem>
         ))}
       </SidebarMenu>
