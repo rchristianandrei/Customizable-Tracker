@@ -19,17 +19,40 @@ import {
 } from "@/components/ui/context-menu";
 import { Textbox } from "@/components/tracker/components/textbox";
 import { cn } from "@/lib/utils";
+import { useTrackerForm } from "@/hooks/useTrackerForm";
+import type { TrackerType } from "@/types/tracker";
+import { usePreventUnload } from "@/hooks/usePreventUnload";
 
 export const Preview = () => {
-  const { tracker, selectedComponent, showSettings } = useEditTrackerState();
-  const { setSelectedComponent, deleteComponent, setComponents } =
-    useEditTrackerAction();
+  const { tracker } = useEditTrackerState();
 
   if (!tracker) return;
 
+  return <TrackerPreview tracker={tracker} />;
+};
+
+const TrackerPreview = ({ tracker }: { tracker: TrackerType }) => {
+  const { selectedComponent, showSettings } = useEditTrackerState();
+  const { setSelectedComponent, deleteComponent, setComponents } =
+    useEditTrackerAction();
+  const { form, isOngoing, handleStart, handleSubmit } =
+    useTrackerForm(tracker);
+
+  usePreventUnload(isOngoing);
+
+  const onSubmitEvent = async () => {
+    return handleSubmit(async () => {
+      form.reset();
+    });
+  };
+
   return (
     <section className={cn("h-full py-20", showSettings ? "" : "py-10")}>
-      <Tracker tracker={tracker}>
+      <Tracker
+        tracker={tracker}
+        onStartEvent={handleStart}
+        onSubmitEvent={onSubmitEvent}
+      >
         {tracker.components && (
           <Sortable
             value={tracker.components}
@@ -50,6 +73,7 @@ export const Preview = () => {
                             variant="ghost"
                             size="icon"
                             className="size-8"
+                            tabIndex={-1}
                           >
                             <GripVertical className="h-4 w-4" />
                           </Button>
@@ -66,11 +90,13 @@ export const Preview = () => {
                             onClick={() => setSelectedComponent(component.id)}
                           >
                             <Textbox
+                              form={form}
                               component={component}
                               selected={
                                 showSettings &&
                                 selectedComponent?.id === component.id
                               }
+                              enable={isOngoing}
                             />
                           </div>
                         </ContextMenuTrigger>
