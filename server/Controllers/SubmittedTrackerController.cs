@@ -14,13 +14,17 @@ public class SubmittedTrackerController(SubmittedTrackerRepo _submittedRepo) : C
     [HttpGet("{trackerId}")]
     public async Task<IActionResult> Get(
         string trackerId,
-        [FromQuery] DateTime from,
-        [FromQuery] DateTime to)
+        [FromQuery] DateTime? from = null,
+        [FromQuery] DateTime? to = null)
     {
-        if (from > to)
+        var today = DateTime.Today;
+        var resolvedFrom = from ?? today;
+        var resolvedTo = to ?? today.AddDays(1).AddTicks(-1);
+
+        if (resolvedFrom > resolvedTo)
             return BadRequest("'from' date must be earlier than 'to' date.");
 
-        var results = await _submittedRepo.GetAllByTrackerIdAndDateRange(trackerId, from, to);
+        var results = await _submittedRepo.GetAllByTrackerIdAndDateRange(trackerId, resolvedFrom, resolvedTo);
 
         return Ok(results);
     }

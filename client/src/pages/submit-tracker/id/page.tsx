@@ -1,3 +1,4 @@
+import { submittedRepo } from "@/api/submitRepo";
 import { trackerRepo } from "@/api/trackerRepo";
 import { Textbox } from "@/components/tracker/components/textbox";
 import { Tracker } from "@/components/tracker/tracker";
@@ -7,6 +8,7 @@ import type { TrackerType } from "@/types/tracker";
 import { Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import { toast } from "sonner";
 
 export const AnswerTracker = () => {
   const { id } = useParams();
@@ -40,7 +42,24 @@ const AnswerTrackerForm = ({ tracker }: { tracker: TrackerType }) => {
     if (!isValid) return false;
     return handleSubmit(async (data) => {
       console.log(data);
-      form.reset();
+      const map = Object.entries(data).map(([key, value]) => {
+        const component = tracker.components.find((c) => c.id === Number(key));
+        return {
+          label: component?.label ?? "",
+          encodedData: String(value),
+        };
+      });
+      try {
+        await submittedRepo.submit({
+          trackerId: tracker.id.toString(),
+          trackerName: tracker.name,
+          components: map,
+        });
+        form.reset();
+      } catch (error) {
+        toast.error("Unable to Submit Data");
+        throw error;
+      }
     });
   };
 
