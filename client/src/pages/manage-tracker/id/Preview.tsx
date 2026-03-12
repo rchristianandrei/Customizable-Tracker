@@ -22,6 +22,7 @@ import { cn } from "@/lib/utils";
 import { useTrackerForm } from "@/hooks/useTrackerForm";
 import type { TrackerType } from "@/types/tracker";
 import { usePreventUnload } from "@/hooks/usePreventUnload";
+import { useStopwatch } from "@/hooks/useStopwatch";
 
 export const Preview = () => {
   const { tracker } = useEditTrackerState();
@@ -35,22 +36,28 @@ const TrackerPreview = ({ tracker }: { tracker: TrackerType }) => {
   const { selectedComponent, showSettings } = useEditTrackerState();
   const { setSelectedComponent, deleteComponent, setComponents } =
     useEditTrackerAction();
-  const { form, isOngoing, handleStart, handleSubmit } =
-    useTrackerForm(tracker);
 
-  usePreventUnload(isOngoing);
+  const { form } = useTrackerForm(tracker);
+  const { isActive, formatTime, startTime, resetTime } = useStopwatch();
+
+  usePreventUnload(isActive);
+
+  const onStartEvent = () => {
+    startTime();
+  };
 
   const onSubmitEvent = async () => {
-    return handleSubmit(async () => {
-      form.reset();
-    });
+    form.reset();
+    resetTime();
   };
 
   return (
     <section className={cn("h-full py-20", showSettings ? "" : "py-10")}>
       <Tracker
         tracker={tracker}
-        onStartEvent={handleStart}
+        isActive={isActive}
+        formatTime={formatTime}
+        onStartEvent={onStartEvent}
         onSubmitEvent={onSubmitEvent}
       >
         {tracker.components && (
@@ -96,7 +103,7 @@ const TrackerPreview = ({ tracker }: { tracker: TrackerType }) => {
                                 showSettings &&
                                 selectedComponent?.id === component.id
                               }
-                              enable={isOngoing}
+                              enable={isActive}
                             />
                           </div>
                         </ContextMenuTrigger>

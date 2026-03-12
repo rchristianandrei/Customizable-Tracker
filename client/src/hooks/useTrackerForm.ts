@@ -1,7 +1,6 @@
 import type { DynamicFormValues } from "@/types/DynamicFormValues";
 import type { TrackerType } from "@/types/tracker";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useRef, useState } from "react";
 import { useForm, type Resolver } from "react-hook-form";
 import z from "zod";
 
@@ -25,9 +24,6 @@ export const buildTrackerSchema = (tracker: TrackerType) =>
 
 export const useTrackerForm = (tracker: TrackerType) => {
   const schema = buildTrackerSchema(tracker);
-  const onSubmitResult = useRef(false);
-  const [isOngoing, setIsOngoing] = useState(false);
-
   const form = useForm<DynamicFormValues>({
     resolver: zodResolver(schema) as unknown as Resolver<DynamicFormValues>,
     mode: "onChange",
@@ -38,21 +34,5 @@ export const useTrackerForm = (tracker: TrackerType) => {
     ),
   });
 
-  const handleStart = () => {
-    setIsOngoing(true);
-  };
-
-  const handleSubmit = async (
-    onSubmit: (data: z.infer<typeof schema>) => Promise<void>,
-  ) => {
-    onSubmitResult.current = false;
-    await form.handleSubmit(async (data) => {
-      await onSubmit(data);
-      onSubmitResult.current = true;
-      setIsOngoing(false);
-    })();
-    return onSubmitResult.current;
-  };
-
-  return { form, schema, isOngoing, handleStart, handleSubmit };
+  return { form, schema };
 };

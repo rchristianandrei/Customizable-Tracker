@@ -1,31 +1,27 @@
 import { Button } from "@/components/ui/button";
 import type { TrackerType } from "@/types/tracker";
-import { useState } from "react";
 
 export const Tracker = ({
   tracker,
   children,
+  isActive,
+  formatTime,
   onStartEvent,
   onSubmitEvent,
 }: {
   tracker?: TrackerType;
   children: React.ReactNode;
+  isActive: boolean;
+  formatTime: string;
   onStartEvent?: () => void;
-  onSubmitEvent?: () => boolean | Promise<boolean>;
+  onSubmitEvent?: () => void | Promise<void>;
 }) => {
-  const [onGoing, setOnGoing] = useState(false);
-
   const onStart = () => {
-    setOnGoing(true);
     onStartEvent?.();
   };
 
   const onSubmit = async () => {
-    if (onSubmitEvent) {
-      setOnGoing(!(await onSubmitEvent()));
-    } else {
-      setOnGoing(false);
-    }
+    await onSubmitEvent?.();
   };
 
   return (
@@ -40,11 +36,11 @@ export const Tracker = ({
         <Button
           type="button"
           onClick={onStart}
-          disabled={onGoing}
+          disabled={isActive}
           className="w-full"
         >
-          {onGoing && <span>00:00:00</span>}
-          {!onGoing && <span>Start</span>}
+          {isActive && <span>{formatTime}</span>}
+          {!isActive && <span>Start</span>}
         </Button>
       </section>
       <section className="flex-1 overflow-auto">{children}</section>
@@ -53,7 +49,7 @@ export const Tracker = ({
           type="submit"
           onClick={onSubmit}
           className="w-full"
-          disabled={!onGoing}
+          disabled={!isActive}
         >
           Submit
         </Button>

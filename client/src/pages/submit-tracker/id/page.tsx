@@ -3,6 +3,7 @@ import { trackerRepo } from "@/api/trackerRepo";
 import { Textbox } from "@/components/tracker/components/textbox";
 import { Tracker } from "@/components/tracker/tracker";
 import { usePreventUnload } from "@/hooks/usePreventUnload";
+import { useStopwatch } from "@/hooks/useStopwatch";
 import { useTrackerForm } from "@/hooks/useTrackerForm";
 import type { TrackerType } from "@/types/tracker";
 import { Loader2 } from "lucide-react";
@@ -32,42 +33,61 @@ export const AnswerTracker = () => {
 };
 
 const AnswerTrackerForm = ({ tracker }: { tracker: TrackerType }) => {
-  const { form, isOngoing, handleStart, handleSubmit } =
-    useTrackerForm(tracker);
+  const { form } = useTrackerForm(tracker);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { isActive, elapsedTime, formatTime, startTime, resetTime } =
+    useStopwatch();
 
-  usePreventUnload(isOngoing);
+  usePreventUnload(isActive);
+
+  const onStart = () => {
+    startTime();
+  };
 
   const onSubmit = async () => {
+    if (isSubmitting) return;
+
     const isValid = await form.trigger();
-    if (!isValid) return false;
-    return handleSubmit(async (data) => {
-      console.log(data);
-      const map = Object.entries(data).map(([key, value]) => {
-        const component = tracker.components.find((c) => c.id === Number(key));
-        return {
-          label: component?.label ?? "",
-          encodedData: String(value),
-        };
-      });
-      try {
-        await submittedRepo.submit({
-          trackerId: tracker.id.toString(),
-          trackerName: tracker.name,
-          components: map,
-        });
-        form.reset();
-      } catch (error) {
-        toast.error("Unable to Submit Data");
-        throw error;
-      }
+    if (!isValid) return;
+
+    setIsSubmitting(true);
+
+    const timeInSecs = elapsedTime / 1000;
+    const formData = form.getValues();
+
+    console.log("Elapsed Time in Secs:", timeInSecs);
+
+    const mapComponentData = Object.entries(formData).map(([key, value]) => {
+      const component = tracker.components.find((c) => c.id === Number(key));
+      return {
+        label: component?.label ?? "",
+        encodedData: String(value),
+      };
     });
+
+    try {
+      await submittedRepo.submit({
+        trackerId: tracker.id.toString(),
+        trackerName: tracker.name,
+        components: mapComponentData,
+      });
+      form.reset();
+      resetTime();
+      toast.success("Tracker Submitted");
+    } catch (error) {
+      toast.error("Unable to Submit Data");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
     <section className="h-screen">
       <Tracker
         tracker={tracker}
-        onStartEvent={handleStart}
+        isActive={isActive}
+        formatTime={formatTime}
+        onStartEvent={onStart}
         onSubmitEvent={onSubmit}
       >
         <form>
@@ -76,7 +96,7 @@ const AnswerTrackerForm = ({ tracker }: { tracker: TrackerType }) => {
               key={component.id}
               form={form}
               component={component}
-              enable={isOngoing}
+              enable={isActive}
             />
           ))}
         </form>
