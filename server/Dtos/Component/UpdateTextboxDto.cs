@@ -4,7 +4,7 @@ namespace server.Dtos.Component;
 
 public class UpdateTextboxDto
 {
-    public int Id { get; set; }
+    public string Id { get; set; } = null!;
 
     [Required]
     [MaxLength(30)]

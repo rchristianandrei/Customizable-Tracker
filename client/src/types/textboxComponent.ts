@@ -1,5 +1,5 @@
 export type TextboxComponent = {
-  id: number;
+  id: string;
   label: string;
   placeholder: string;
   required: boolean;

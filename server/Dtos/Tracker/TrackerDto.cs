@@ -6,7 +6,7 @@ namespace server.Dtos.Tracker;
 public class TrackerDto
 {
     [Required]
-    public int Id { get; set; }
+    public string Id { get; set; } = null!;
 
     [Required]
     public string Name { get; set; } = string.Empty;

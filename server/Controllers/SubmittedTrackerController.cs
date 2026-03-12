@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using server.Data;
 using server.Dtos.SubmittedTracker;
+using server.Models.MongoDb;
 using server.Repos;
 
 namespace server.Controllers;
@@ -32,7 +33,13 @@ public class SubmittedTrackerController(SubmittedTrackerRepo _submittedRepo) : C
     [HttpPost]
     public async Task<IActionResult> Post([FromBody] CreateSubmittedTrackerDto value)
     {
-        var submitted = await _submittedRepo.CreateAsync(value);
-        return Ok(submitted);
+        var tracker = new SubmittedTracker
+        {
+            TrackerId = value.TrackerId,
+            TrackerName = value.TrackerName,
+            Components = value.Components
+        };
+        await _submittedRepo.Create(tracker);
+        return Ok(tracker);
     }
 }

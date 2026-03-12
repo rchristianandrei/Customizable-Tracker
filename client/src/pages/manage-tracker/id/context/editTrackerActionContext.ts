@@ -5,8 +5,8 @@ export type EditTrackerAction = {
   toggleSettings: (show: boolean) => void;
   updateTracker: () => void;
   addComponent: () => Promise<void>;
-  deleteComponent: (id: number) => Promise<void>;
-  setSelectedComponent: (id: number | null) => void;
+  deleteComponent: (id: string) => void;
+  setSelectedComponent: (id: string | null) => void;
   setComponents: (components: TextboxComponent[]) => void;
 };
 

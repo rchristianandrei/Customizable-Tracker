@@ -6,6 +6,7 @@ using server.Dtos.Component;
 using server.Interfaces;
 using server.Mappers;
 using server.Models;
+using server.Repos;
 
 namespace server.Controllers;
 
@@ -14,40 +15,29 @@ namespace server.Controllers;
 [ApiController]
 public class TextboxController(
     ApplicationDbContext _context, 
-    ICurrentUserService _currentUserService
+    ICurrentUserService _currentUserService,
+    TrackerRepo _trackerRepo
     ) : ControllerBase
 {
-    //[HttpGet]
-    //public IEnumerable<string> Get()
-    //{
-    //    return new string[] { "value1", "value2" };
-    //}
-
-    //[HttpGet("{id}")]
-    //public string Get(int id)
-    //{
-    //    return "value";
-    //}
-
     [HttpPost]
     public async Task<IActionResult> Post([FromBody] CreateComponentDto dto)
     {
-        var tracker = await _context.Trackers.Include(t => t.Components).FirstOrDefaultAsync((t) => t.Id == dto.TrackerId);
+        var tracker = await _trackerRepo.GetById(dto.TrackerId);
         if (tracker == null) return NotFound();
         if (tracker.UserEmail != _currentUserService.Email) return Unauthorized();
 
-        var texbox = new TextboxComponent{
+        var texbox = new Models.MongoDb.TextboxComponent
+        {
             Label = "Textbox",
             Placeholder = "Placeholder",
-            Order = tracker.Components.Count + 1, 
-            CreatedAt = DateTime.Now
+            Order = tracker.Components.Count + 1
         };
 
         tracker.Components.Add(texbox);
 
-        await _context.SaveChangesAsync();
+        await _trackerRepo.Update(tracker);
 
-        return Ok(texbox.ToDto());
+        return Ok(texbox);
     }
 
     [HttpPut("{id}")]
@@ -67,7 +57,7 @@ public class TextboxController(
     }
 
     [HttpDelete("{id}")]
-    public async Task<IActionResult> Delete(int id)
+    public async Task<IActionResult> Delete(string id)
     {
         var textbox = await _context.TextboxComponents.FindAsync(id);
 

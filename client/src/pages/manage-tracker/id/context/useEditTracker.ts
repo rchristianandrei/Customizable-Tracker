@@ -21,7 +21,7 @@ export const useEditTracker = (): {
   action: EditTrackerAction;
 } => {
   const [tracker, setTracker] = useState<TrackerType | null>(null);
-  const [selectedComponentId, setSelectedComponentId] = useState<number | null>(
+  const [selectedComponentId, setSelectedComponentId] = useState<string | null>(
     null,
   );
   const [loading, setLoading] = useState<{ state: boolean; message?: string }>({
@@ -56,7 +56,7 @@ export const useEditTracker = (): {
   });
 
   useEffect(() => {
-    const loadTracker = async (id: number) => {
+    const loadTracker = async (id: string) => {
       setLoading({ state: true, message: "Loading Tracker" });
 
       const tracker = await trackerRepo.getById(id);
@@ -81,7 +81,7 @@ export const useEditTracker = (): {
         state: false,
       }));
     };
-    loadTracker(Number(id));
+    loadTracker(id ?? "");
 
     return () => {
       trackerWatchRef.current?.unsubscribe();
@@ -127,26 +127,14 @@ export const useEditTracker = (): {
   }, [loading.state, tracker?.id]);
 
   const deleteComponent = useCallback(
-    async (id: number) => {
-      if (loading.state) return;
-
-      setLoading({ state: true, message: "Deleting Component" });
-
-      try {
-        await componentRepo.delete(id);
-        setTracker((t) => {
-          if (!t) return t;
-          return {
-            ...t,
-            components: t.components.filter((c) => c.id !== id),
-          };
-        });
-        toast.success("Deleted the component");
-      } catch (error) {
-        toast.error("Unable to delete the component");
-      } finally {
-        setLoading({ state: false });
-      }
+    (id: string) => {
+      setTracker((t) => {
+        if (!t) return t;
+        return {
+          ...t,
+          components: t.components.filter((c) => c.id !== id),
+        };
+      });
     },
     [loading.state],
   );
@@ -163,7 +151,7 @@ export const useEditTracker = (): {
   }, []);
 
   const setSelectedComponent = useCallback(
-    (id: number | null) => {
+    (id: string | null) => {
       if (!tracker) return;
       textboxWatchRef.current?.unsubscribe();
 

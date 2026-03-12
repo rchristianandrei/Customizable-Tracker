@@ -1,12 +1,13 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using server.Data;
+using MongoDB.Bson;
+using MongoDB.Driver;
 using server.Dtos;
 using server.Dtos.Tracker;
 using server.Interfaces;
 using server.Mappers;
-using server.Models;
+using server.Models.MongoDb;
+using server.Repos;
 using server.Services;
 
 namespace server.Controllers
@@ -15,48 +16,50 @@ namespace server.Controllers
     [Route("api/[controller]")]
     [ApiController]
     public class TrackerController(
-        ApplicationDbContext _context,
         ICurrentUserService _currentUserService,
+        TrackerRepo _trackerRepo,
         TextboxService _textboxService
     ) : ControllerBase
     {
         [HttpGet]
         public async Task<IActionResult> Get([FromQuery] PaginatedQueryParameters dto)
         {
-            var query = _context.Trackers.AsQueryable();
+            var builder = Builders<Tracker>.Filter;
+            var userFilter = builder.Eq(t => t.UserEmail, _currentUserService.Email);
+            var searchFilter = builder.Empty;
+            if (!string.IsNullOrWhiteSpace(dto.Query))
+            {
+                var nameFilter = builder.Regex(t => t.Name, new BsonRegularExpression(dto.Query, "i"));
+                var descFilter = builder.Regex(t => t.Description, new BsonRegularExpression(dto.Query, "i"));
+                searchFilter = builder.Or(nameFilter, descFilter);
+            }
+            var combinedFilter = builder.And(userFilter, searchFilter);
 
-            if(dto.Query != null) query = query.Where(t => (t.Name.Contains(dto.Query) || t.Description.Contains(dto.Query) && t.UserEmail == _currentUserService.Email));
-
-            var totalCount = await query.CountAsync();
-            var trackers = await query
-                .OrderByDescending(t => t.CreatedAt)
-                .Skip((dto.PageOrDefault - 1) * dto.PageSizeOrDefault)
-                .Take(dto.PageSizeOrDefault)
-                .ToListAsync();
+            var trackers = await _trackerRepo.GetAll(combinedFilter, dto);
+            var totalCount = (await _trackerRepo.GetAll(combinedFilter)).Count();
             var dtos = trackers.Select(t => t.ToDto());
 
-            return Ok(new {
+            return Ok(new
+            {
                 totalCount,
                 page = dto.PageOrDefault,
-                pageSize =  dto.PageSizeOrDefault,
+                pageSize = dto.PageSizeOrDefault,
                 totalPages = (int)Math.Ceiling(totalCount / (double)dto.PageSizeOrDefault),
                 data = dtos
             });
         }
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> Get(int id)
+        public async Task<IActionResult> Get(string id)
         {
-            var tracker = await _context.Trackers
-                .Include(t => t.Components)
-                .FirstOrDefaultAsync(t => t.Id == id);
+            var tracker = await _trackerRepo.GetById(id);
 
             if (tracker == null) return NotFound();
             if (tracker.UserEmail != _currentUserService.Email) return Unauthorized();
 
             tracker.Components = [.. tracker.Components.OrderBy(c => c.Order)];
 
-            return Ok(tracker.ToDto());
+            return Ok(tracker.ToDto(includeComponents: true));
         }
 
         [HttpPost]
@@ -70,49 +73,52 @@ namespace server.Controllers
                 CreatedAt = DateTime.Now,
             };
 
-            await _context.Trackers.AddAsync(tracker);
-            await _context.SaveChangesAsync();
+            await _trackerRepo.Create(tracker);
 
             return Ok(tracker.ToDto());
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Put(int id, [FromBody] UpdateTrackerDto dto)
+        public async Task<IActionResult> Put(string id, [FromBody] UpdateTrackerDto dto)
         {
-            var tracker = await _context.Trackers.Include(c => c.Components).FirstOrDefaultAsync(t => t.Id == id);
+            var tracker = await _trackerRepo.GetById(id);
 
             if (tracker == null) return NotFound();
             if (tracker.UserEmail != _currentUserService.Email) return Unauthorized();
 
             tracker.Name = dto.Name;
             tracker.Description = dto.Description;
+            tracker.LastUpdated = DateTime.UtcNow;
 
-            List<TextboxComponent> newOrder = [];
-            for(var i = 0; i < dto.Components.Count; i++)
+            int orderIndex = 0;
+            var components = dto.Components.Select(c =>
             {
-                var cDto = dto.Components[i];
-                var component = tracker.Components.FirstOrDefault(c => c.Id == cDto.Id);
-                if(component == null) continue;
-                _textboxService.Update(cDto, i, component);
-                newOrder.Add(component);
-            }
+                return new TextboxComponent
+                {
+                    Id = c.Id,
+                    Label = c.Label,
+                    Placeholder = c.Placeholder,
+                    Required = c.Required,
+                    Order = orderIndex + 1,
+                    MaxLength = c.MaxLength
+                };
+            }).ToList();
 
-            tracker.Components = newOrder;
+            tracker.Components = components;
 
-            await _context.SaveChangesAsync();
+            await _trackerRepo.Update(tracker);
 
             return Ok(tracker.ToDto());
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(int id)
+        public async Task<IActionResult> Delete(string id)
         {
-            var tracker = await _context.Trackers.FindAsync(id);
+            var tracker = await _trackerRepo.GetById(id);
 
             if (tracker == null) return NotFound();
 
-            _context.Trackers.Remove(tracker);
-            await _context.SaveChangesAsync();
+            await _trackerRepo.DeleteById(id);
 
             return NoContent();
         }

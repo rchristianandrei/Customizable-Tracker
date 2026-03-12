@@ -1,7 +1,7 @@
 import type { TextboxComponent } from "./textboxComponent";
 
 export type TrackerType = {
-  id: number;
+  id: string;
   name: string;
   description: string;
   components: TextboxComponent[];

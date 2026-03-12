@@ -17,13 +17,13 @@ export const AnswerTracker = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const loadTracker = async (id: number) => {
+    const loadTracker = async (id: string) => {
       setLoading(true);
       const tracker = await trackerRepo.getById(id);
       setTracker(tracker);
       setLoading(false);
     };
-    loadTracker(Number(id));
+    loadTracker(id ?? "");
   }, []);
 
   if (loading) return <Loader2 />;

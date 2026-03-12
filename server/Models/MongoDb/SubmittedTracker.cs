@@ -1,9 +1,10 @@
 ﻿using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
+using server.Interfaces;
 
 namespace server.Models.MongoDb;
 
-public class SubmittedTracker
+public class SubmittedTracker : IEntity
 {
     [BsonId]
     [BsonRepresentation(BsonType.ObjectId)]

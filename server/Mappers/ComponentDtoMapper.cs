@@ -1,5 +1,5 @@
 ﻿using server.Dtos.Component;
-using server.Models;
+using server.Models.MongoDb;
 
 namespace server.Mappers;
 

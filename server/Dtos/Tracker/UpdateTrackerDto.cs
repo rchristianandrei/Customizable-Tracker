@@ -5,7 +5,7 @@ namespace server.Dtos.Tracker;
 
 public class UpdateTrackerDto
 {
-    public int Id { get; set; }
+    public string Id { get; set; } = null!;
 
     [Required]
     [MaxLength(30)]
