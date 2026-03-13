@@ -1,10 +1,11 @@
 ﻿using MongoDB.Driver;
 using server.Dtos;
+using server.Interfaces;
 using server.Models.MongoDb;
 
 namespace server.Repos;
 
-public class TrackerRepo(IMongoDatabase db) : MongoRepo<Tracker>(db, "trackers")
+public class TrackerRepo(IMongoDatabase db) : MongoRepo<Tracker>(db, "trackers"), ITrackerRepo
 {
     public async Task<List<Tracker>> GetAll(FilterDefinition<Tracker> filter, PaginatedQueryParameters dto)
     {

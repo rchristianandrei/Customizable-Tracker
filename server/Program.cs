@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using server.Data;
 using server.Extensions;
 using server.Interfaces;
-using server.Models;
+using server.Models.MySql;
 using server.Services;
 
 DotNetEnv.Env.Load();
@@ -24,7 +24,6 @@ builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<ICurrentUserService,CurrentUserService>();
 builder.Services.AddScoped<IJwtService, JwtService>();
-builder.Services.AddScoped<TextboxService>();
 
 // CORS
 var allowedOrigins = builder.Configuration

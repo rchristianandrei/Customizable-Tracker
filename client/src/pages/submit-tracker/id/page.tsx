@@ -58,7 +58,7 @@ const AnswerTrackerForm = ({ tracker }: { tracker: TrackerType }) => {
     console.log("Elapsed Time in Secs:", timeInSecs);
 
     const mapComponentData = Object.entries(formData).map(([key, value]) => {
-      const component = tracker.components.find((c) => c.id === Number(key));
+      const component = tracker.components.find((c) => c.id === key);
       return {
         label: component?.label ?? "",
         encodedData: String(value),

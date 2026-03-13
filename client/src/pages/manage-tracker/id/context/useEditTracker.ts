@@ -112,7 +112,7 @@ export const useEditTracker = (): {
     if (loading.state || !tracker) return;
     setLoading({ state: true, message: "Adding Component" });
     try {
-      const component = await componentRepo.create({ trackerId: tracker.id });
+      const component = await componentRepo.createTextbox();
       setTracker((t) => {
         if (!t) return t;
         return { ...t, components: [...t.components, component] };

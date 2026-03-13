@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Options;
 using MongoDB.Driver;
+using server.Interfaces;
 using server.Repos;
 using server.Settings;
 
@@ -24,8 +25,8 @@ public static class MongoDbExtension
             return client.GetDatabase(settings.DatabaseName);
         });
 
-        services.AddScoped<SubmittedTrackerRepo>();
-        services.AddScoped<TrackerRepo>();
+        services.AddScoped<ISubmittedTrackerRepo, SubmittedTrackerRepo>();
+        services.AddScoped<ITrackerRepo, TrackerRepo>();
 
         return services;
     }

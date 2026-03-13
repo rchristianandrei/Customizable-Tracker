@@ -7,8 +7,6 @@ using server.Dtos.Tracker;
 using server.Interfaces;
 using server.Mappers;
 using server.Models.MongoDb;
-using server.Repos;
-using server.Services;
 
 namespace server.Controllers
 {
@@ -17,8 +15,7 @@ namespace server.Controllers
     [ApiController]
     public class TrackerController(
         ICurrentUserService _currentUserService,
-        TrackerRepo _trackerRepo,
-        TextboxService _textboxService
+        ITrackerRepo _trackerRepo
     ) : ControllerBase
     {
         [HttpGet]
