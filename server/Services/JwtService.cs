@@ -1,6 +1,6 @@
 ﻿using Microsoft.IdentityModel.Tokens;
 using server.Interfaces;
-using server.Models;
+using server.Models.MySql;
 using server.Settings;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;

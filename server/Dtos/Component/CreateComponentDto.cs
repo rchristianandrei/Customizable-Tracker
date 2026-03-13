@@ -1,6 +1,9 @@
-﻿namespace server.Dtos.Component;
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace server.Dtos.Component;
 
 public class CreateComponentDto
 {
-    public int TrackerId { get; set; }
+    [Required]
+    public string TrackerId { get; set; } = null!;
 }

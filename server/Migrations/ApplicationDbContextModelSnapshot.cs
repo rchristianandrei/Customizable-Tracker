@@ -22,79 +22,7 @@ namespace server.Migrations
 
             MySqlModelBuilderExtensions.AutoIncrementColumns(modelBuilder);
 
-            modelBuilder.Entity("server.Models.TextboxComponent", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<string>("Label")
-                        .IsRequired()
-                        .HasMaxLength(30)
-                        .HasColumnType("varchar(30)");
-
-                    b.Property<int>("MaxLength")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Order")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Placeholder")
-                        .IsRequired()
-                        .HasMaxLength(30)
-                        .HasColumnType("varchar(30)");
-
-                    b.Property<bool>("Required")
-                        .HasColumnType("tinyint(1)");
-
-                    b.Property<int>("TrackerId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("TrackerId");
-
-                    b.ToTable("TextboxComponents");
-                });
-
-            modelBuilder.Entity("server.Models.Tracker", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasMaxLength(30)
-                        .HasColumnType("varchar(30)");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(30)
-                        .HasColumnType("varchar(30)");
-
-                    b.Property<string>("UserEmail")
-                        .IsRequired()
-                        .HasColumnType("varchar(255)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserEmail");
-
-                    b.ToTable("Trackers");
-                });
-
-            modelBuilder.Entity("server.Models.User", b =>
+            modelBuilder.Entity("server.Models.MySql.User", b =>
                 {
                     b.Property<string>("Email")
                         .HasMaxLength(255)
@@ -120,38 +48,6 @@ namespace server.Migrations
                     b.HasKey("Email");
 
                     b.ToTable("Users");
-                });
-
-            modelBuilder.Entity("server.Models.TextboxComponent", b =>
-                {
-                    b.HasOne("server.Models.Tracker", "Tracker")
-                        .WithMany("Components")
-                        .HasForeignKey("TrackerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Tracker");
-                });
-
-            modelBuilder.Entity("server.Models.Tracker", b =>
-                {
-                    b.HasOne("server.Models.User", "User")
-                        .WithMany("Trackers")
-                        .HasForeignKey("UserEmail")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("server.Models.Tracker", b =>
-                {
-                    b.Navigation("Components");
-                });
-
-            modelBuilder.Entity("server.Models.User", b =>
-                {
-                    b.Navigation("Trackers");
                 });
 #pragma warning restore 612, 618
         }

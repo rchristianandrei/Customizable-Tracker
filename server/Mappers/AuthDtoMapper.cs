@@ -1,5 +1,5 @@
 ﻿using server.Dtos.Auth;
-using server.Models;
+using server.Models.MySql;
 
 namespace server.Mappers;
 

@@ -17,13 +17,13 @@ export const AnswerTracker = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const loadTracker = async (id: number) => {
+    const loadTracker = async (id: string) => {
       setLoading(true);
       const tracker = await trackerRepo.getById(id);
       setTracker(tracker);
       setLoading(false);
     };
-    loadTracker(Number(id));
+    loadTracker(id ?? "");
   }, []);
 
   if (loading) return <Loader2 />;
@@ -58,7 +58,7 @@ const AnswerTrackerForm = ({ tracker }: { tracker: TrackerType }) => {
     console.log("Elapsed Time in Secs:", timeInSecs);
 
     const mapComponentData = Object.entries(formData).map(([key, value]) => {
-      const component = tracker.components.find((c) => c.id === Number(key));
+      const component = tracker.components.find((c) => c.id === key);
       return {
         label: component?.label ?? "",
         encodedData: String(value),

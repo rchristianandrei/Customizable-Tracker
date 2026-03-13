@@ -1,15 +1,15 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using server.Data;
 using server.Dtos.SubmittedTracker;
-using server.Repos;
+using server.Interfaces;
+using server.Models.MongoDb;
 
 namespace server.Controllers;
 
 [Authorize]
 [Route("api/[controller]")]
 [ApiController]
-public class SubmittedTrackerController(SubmittedTrackerRepo _submittedRepo) : ControllerBase
+public class SubmittedTrackerController(ISubmittedTrackerRepo _submittedRepo) : ControllerBase
 {
     [HttpGet("{trackerId}")]
     public async Task<IActionResult> Get(
@@ -32,7 +32,13 @@ public class SubmittedTrackerController(SubmittedTrackerRepo _submittedRepo) : C
     [HttpPost]
     public async Task<IActionResult> Post([FromBody] CreateSubmittedTrackerDto value)
     {
-        var submitted = await _submittedRepo.CreateAsync(value);
-        return Ok(submitted);
+        var tracker = new SubmittedTracker
+        {
+            TrackerId = value.TrackerId,
+            TrackerName = value.TrackerName,
+            Components = value.Components
+        };
+        await _submittedRepo.Create(tracker);
+        return Ok(tracker);
     }
 }

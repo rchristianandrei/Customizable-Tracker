@@ -1,37 +1,17 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
-using MongoDB.Driver;
 using server.Data;
 using server.Extensions;
 using server.Interfaces;
-using server.Models;
-using server.Repos;
+using server.Models.MySql;
 using server.Services;
-using server.Settings;
 
 DotNetEnv.Env.Load();
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Mongo Db
-builder.Services.Configure<MongoDbSettings>(
-    builder.Configuration.GetSection("MongoDB"));
-
-builder.Services.AddSingleton<IMongoClient>(sp =>
-{
-    var settings = sp.GetRequiredService<IOptions<MongoDbSettings>>().Value;
-    return new MongoClient(settings.ConnectionString);
-});
-
-builder.Services.AddScoped<IMongoDatabase>(sp =>
-{
-    var settings = sp.GetRequiredService<IOptions<MongoDbSettings>>().Value;
-    var client = sp.GetRequiredService<IMongoClient>();
-    return client.GetDatabase(settings.DatabaseName);
-});
-
-builder.Services.AddScoped<SubmittedTrackerRepo>();
+builder.Services.AddMongoDb(builder.Configuration);
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
@@ -44,7 +24,6 @@ builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<ICurrentUserService,CurrentUserService>();
 builder.Services.AddScoped<IJwtService, JwtService>();
-builder.Services.AddScoped<TextboxService>();
 
 // CORS
 var allowedOrigins = builder.Configuration

@@ -65,7 +65,7 @@ const TrackerPreview = ({ tracker }: { tracker: TrackerType }) => {
             value={tracker.components}
             onValueChange={setComponents}
             onDragStart={(event) =>
-              setSelectedComponent(Number(event.active.id))
+              setSelectedComponent(String(event.active.id))
             }
             getItemValue={(item) => item.id}
           >

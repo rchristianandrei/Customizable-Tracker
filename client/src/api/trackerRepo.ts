@@ -12,7 +12,7 @@ export const trackerRepo = {
     );
     return res.data;
   },
-  getById: async (id: number) => {
+  getById: async (id: string) => {
     const res = await api.get<TrackerType>(`${controller}/${id}`);
     return res.data;
   },

@@ -5,6 +5,7 @@ using server.Dtos.Auth;
 using server.Interfaces;
 using server.Mappers;
 using server.Models;
+using server.Models.MySql;
 using server.Settings;
 
 namespace server.Controllers;

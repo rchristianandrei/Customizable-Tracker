@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using server.Interfaces;
-using server.Models;
+using server.Models.MySql;
 
 namespace server.Services;
 
