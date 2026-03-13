@@ -20,7 +20,11 @@ export const CrudPage = () => {
           />
         </div>
 
-        <TrackerGrid trackers={trackers?.data} loading={loading} />
+        <TrackerGrid
+          trackers={trackers?.data}
+          loading={loading}
+          openOnNewTab={false}
+        />
 
         {trackers && <ResultCount count={trackers.data.length} />}
 

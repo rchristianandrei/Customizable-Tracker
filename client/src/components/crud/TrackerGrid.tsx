@@ -15,10 +15,16 @@ import type { TrackerType } from "@/types/tracker";
 type Props = {
   trackers?: TrackerType[];
   loading: boolean;
+  openOnNewTab?: boolean;
   renderActions?: (tracker: TrackerType) => React.ReactNode;
 };
 
-export const TrackerGrid = ({ trackers, loading, renderActions }: Props) => {
+export const TrackerGrid = ({
+  trackers,
+  loading,
+  openOnNewTab = true,
+  renderActions,
+}: Props) => {
   return (
     <div className="flex-1 overflow-auto relative">
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -46,7 +52,7 @@ export const TrackerGrid = ({ trackers, loading, renderActions }: Props) => {
                 {tracker.description || "No description provided."}
               </p>
 
-              <Link to={`${tracker.id}`} target="_blank">
+              <Link to={`${tracker.id}`} target={openOnNewTab ? "_blank" : ""}>
                 <Button type="button">
                   <ArrowRight />
                 </Button>
