@@ -14,6 +14,8 @@ import { PrivateRoute } from "@/guards/PrivateRoute";
 import { Toaster } from "@/components/ui/sonner";
 import { useUserStore } from "@/store/useUserStore";
 import { AnswerTracker } from "./pages/submit-tracker/id/page";
+import { Reports } from "./pages/reports/page";
+import { Table } from "./pages/reports/id/page";
 
 function App() {
   const fetchUser = useUserStore((state) => state.fetchUser);
@@ -44,6 +46,10 @@ function App() {
             <Route path="/manage-tracker">
               <Route path="" element={<ManageTracker></ManageTracker>}></Route>
               <Route path=":id" element={<EditTracker></EditTracker>}></Route>
+            </Route>
+            <Route path="/reports">
+              <Route path="" element={<Reports></Reports>}></Route>
+              <Route path=":id" element={<Table></Table>}></Route>
             </Route>
             <Route path="/" element={<Dashboard></Dashboard>}></Route>
           </Route>

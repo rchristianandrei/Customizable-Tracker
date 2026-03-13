@@ -1,4 +1,4 @@
-import { LayoutDashboard, Send, ListPlus } from "lucide-react";
+import { LayoutDashboard, Send, ListPlus, ChartSpline } from "lucide-react";
 import {
   SidebarGroup,
   SidebarGroupLabel,
@@ -23,6 +23,11 @@ const navMain = [
     title: "Manage Tracker",
     url: "/manage-tracker",
     icon: ListPlus,
+  },
+  {
+    title: "Reports",
+    url: "/reports",
+    icon: ChartSpline,
   },
 ];
 

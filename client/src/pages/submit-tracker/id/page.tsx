@@ -60,6 +60,7 @@ const AnswerTrackerForm = ({ tracker }: { tracker: TrackerType }) => {
     const mapComponentData = Object.entries(formData).map(([key, value]) => {
       const component = tracker.components.find((c) => c.id === key);
       return {
+        id: component?.id ?? "",
         label: component?.label ?? "",
         encodedData: String(value),
       };
