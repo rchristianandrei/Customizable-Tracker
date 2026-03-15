@@ -12,15 +12,15 @@ import {
 import type { TrackerType } from "@/types/tracker";
 
 import { CreateTracker } from "./CreateTracker";
-import { useManageTracker } from "./ManageTrackerProvider";
 import { DeleteTracker } from "./DeleteTracker";
 import { SearchBox } from "@/components/inputs/SearchBox";
 import { ResultCount } from "@/components/crud/ResultCount";
 import { Pagination } from "@/components/crud/Pagination";
 import { TrackerGrid } from "@/components/crud/TrackerGrid";
+import { useTrackersContext } from "@/providers/ManageTrackerProvider";
 
 export const CrudPage = () => {
-  const { trackers, loading, queryParams, setParams } = useManageTracker();
+  const { trackers, loading, queryParams, setParams } = useTrackersContext();
 
   const [deleteEvent, setDeleteEvent] = useState<{
     tracker: TrackerType;

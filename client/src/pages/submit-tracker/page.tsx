@@ -1,13 +1,13 @@
 import { RootLayout } from "@/components/layout/rootLayout/page";
 import { CrudPage } from "./crudPage";
-import { SubmitTrackerProvider } from "./provider/SubmitTrackerProvider";
+import { TrackersProvider } from "@/providers/ManageTrackerProvider";
 
 export const SubtmitTracker = () => {
   return (
     <RootLayout featureName="Submit Tracker">
-      <SubmitTrackerProvider>
+      <TrackersProvider>
         <CrudPage></CrudPage>
-      </SubmitTrackerProvider>
+      </TrackersProvider>
     </RootLayout>
   );
 };

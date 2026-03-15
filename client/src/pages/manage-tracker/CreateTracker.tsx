@@ -24,7 +24,7 @@ import {
   FieldLabel,
 } from "@/components/ui/field";
 
-import { useManageTracker } from "./ManageTrackerProvider";
+import { useTrackersContext } from "@/providers/ManageTrackerProvider";
 
 const formSchema = z.object({
   name: z
@@ -46,7 +46,7 @@ const formSchema = z.object({
 });
 
 export const CreateTracker = () => {
-  const { createTracker } = useManageTracker();
+  const { createTracker } = useTrackersContext();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {

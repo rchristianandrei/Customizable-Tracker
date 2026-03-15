@@ -1,13 +1,13 @@
 import { RootLayout } from "@/components/layout/rootLayout/page";
-import { CrudPage } from "./CrudPage";
-import { ManageTrackerProvider } from "./ManageTrackerProvider";
+import { CrudPage } from "./crudPage";
+import { TrackersProvider } from "@/providers/ManageTrackerProvider";
 
 export const ManageTracker = () => {
   return (
     <RootLayout featureName="Manage Tracker">
-      <ManageTrackerProvider>
+      <TrackersProvider>
         <CrudPage></CrudPage>
-      </ManageTrackerProvider>
+      </TrackersProvider>
     </RootLayout>
   );
 };

@@ -2,10 +2,10 @@ import { SearchBox } from "@/components/inputs/SearchBox";
 import { TrackerGrid } from "@/components/crud/TrackerGrid";
 import { ResultCount } from "@/components/crud/ResultCount";
 import { Pagination } from "@/components/crud/Pagination";
-import { useManageTracker } from "../manage-tracker/ManageTrackerProvider";
+import { useTrackersContext } from "@/providers/ManageTrackerProvider";
 
 export const CrudPage = () => {
-  const { trackers, loading, queryParams, setParams } = useManageTracker();
+  const { trackers, loading, queryParams, setParams } = useTrackersContext();
 
   return (
     <>

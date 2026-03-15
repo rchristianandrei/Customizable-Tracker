@@ -66,7 +66,7 @@ export const useTrackers = () => {
     [],
   );
 
-  const deleteTracker = useCallback(async (id: number) => {
+  const deleteTracker = useCallback(async (id: string) => {
     await trackerRepo.delete(id);
     await loadTrackers();
   }, []);
