@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using server.Dtos.Component;
 using server.Mappers;
 
 namespace server.Controllers;
@@ -11,7 +10,7 @@ namespace server.Controllers;
 public class ComponentController : ControllerBase
 {
     [HttpPost("textbox")]
-    public async Task<IActionResult> PostTextbox([FromBody] CreateComponentDto dto)
+    public async Task<IActionResult> PostTextbox()
     {
         var texbox = new Models.MongoDb.TextboxComponent
         {
