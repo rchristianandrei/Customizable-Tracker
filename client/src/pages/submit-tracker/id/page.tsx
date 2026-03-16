@@ -38,7 +38,7 @@ export const AnswerTracker = () => {
 };
 
 const AnswerTrackerForm = ({ tracker }: { tracker: TrackerType }) => {
-  const { form } = useTrackerForm(tracker);
+  const { register, isFormValid, getFormValues, resetForm } = useTrackerForm();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { isActive, elapsedTime, formatTime, startTime, resetTime } =
     useStopwatch();
@@ -52,13 +52,12 @@ const AnswerTrackerForm = ({ tracker }: { tracker: TrackerType }) => {
   const onSubmit = async () => {
     if (isSubmitting) return;
 
-    const isValid = await form.trigger();
-    if (!isValid) return;
+    if (!(await isFormValid())) return;
 
     setIsSubmitting(true);
 
     const timeInSecs = elapsedTime / 1000;
-    const formData = form.getValues();
+    const formData = getFormValues();
 
     console.log("Elapsed Time in Secs:", timeInSecs);
 
@@ -77,7 +76,7 @@ const AnswerTrackerForm = ({ tracker }: { tracker: TrackerType }) => {
         trackerName: tracker.name,
         components: mapComponentData,
       });
-      form.reset();
+      resetForm();
       resetTime();
       toast.success("Tracker Submitted");
     } catch (error) {
@@ -99,8 +98,8 @@ const AnswerTrackerForm = ({ tracker }: { tracker: TrackerType }) => {
         <form>
           {tracker.components.map((component) => (
             <Textbox
+              ref={register(component.id)}
               key={component.id}
-              form={form}
               component={component}
               enable={isActive}
             />

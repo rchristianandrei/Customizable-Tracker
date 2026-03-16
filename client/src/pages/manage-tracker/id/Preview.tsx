@@ -37,7 +37,7 @@ const TrackerPreview = ({ tracker }: { tracker: TrackerType }) => {
   const { setSelectedComponent, deleteComponent, setComponents } =
     useEditTrackerAction();
 
-  const { form } = useTrackerForm(tracker);
+  const { register, resetForm } = useTrackerForm();
   const { isActive, formatTime, startTime, resetTime } = useStopwatch();
 
   usePreventUnload(isActive);
@@ -47,7 +47,7 @@ const TrackerPreview = ({ tracker }: { tracker: TrackerType }) => {
   };
 
   const onSubmitEvent = async () => {
-    form.reset();
+    resetForm();
     resetTime();
   };
 
@@ -97,7 +97,7 @@ const TrackerPreview = ({ tracker }: { tracker: TrackerType }) => {
                             onClick={() => setSelectedComponent(component.id)}
                           >
                             <Textbox
-                              form={form}
+                              ref={register(component.id)}
                               component={component}
                               selected={
                                 showSettings &&

@@ -6,21 +6,51 @@ import {
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
-import type { DynamicFormValues } from "@/types/DynamicFormValues";
+import type { ComponentHandle } from "@/types/trackerTypes/component-handle";
 import type { TextboxComponent } from "@/types/textboxComponent";
-import { Controller, type UseFormReturn } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { forwardRef, useImperativeHandle, useMemo } from "react";
+import { Controller, useForm } from "react-hook-form";
+import z from "zod";
 
-export const Textbox = ({
-  component,
-  form,
-  selected = false,
-  enable = false,
-}: {
-  component: TextboxComponent;
-  selected?: boolean;
-  enable?: boolean;
-  form: UseFormReturn<DynamicFormValues, any, DynamicFormValues>;
-}) => {
+export const Textbox = forwardRef<
+  ComponentHandle,
+  {
+    component: TextboxComponent;
+    selected?: boolean;
+    enable?: boolean;
+  }
+>(({ component, selected = false, enable = false }, ref) => {
+  const formSchema = useMemo(
+    () =>
+      z.object({
+        value: z
+          .string()
+          .min(1, {
+            message: "field is required",
+          })
+          .max(
+            component.maxLength,
+            `must be at most ${component.maxLength} characters`,
+          ),
+      }),
+    [],
+  );
+
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      value: "",
+    },
+    mode: "onChange",
+  });
+
+  useImperativeHandle(ref, () => ({
+    getValues: () => form.getValues(),
+    validate: () => form.trigger(),
+    reset: () => form.reset(),
+  }));
+
   return (
     <FieldGroup
       className={cn(
@@ -29,7 +59,7 @@ export const Textbox = ({
       )}
     >
       <Controller
-        name={component.id.toString()}
+        name={"value"}
         control={form.control}
         render={({ field, fieldState }) => (
           <Field data-invalid={fieldState.invalid} className="gap-1">
@@ -52,4 +82,4 @@ export const Textbox = ({
       />
     </FieldGroup>
   );
-};
+});
