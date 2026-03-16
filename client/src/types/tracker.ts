@@ -5,6 +5,6 @@ export type TrackerType = {
   name: string;
   description: string;
   deploy: boolean;
-  components: Map<string, TextboxComponent>;
+  components: TextboxComponent[];
   createdAt: string;
 };

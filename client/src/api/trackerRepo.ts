@@ -2,7 +2,6 @@ import type { TrackerType } from "@/types/tracker";
 import { api } from "./axios";
 import type { PaginatedData } from "@/types/paginatedData";
 import type { QueryParams } from "@/types/params";
-import type { TextboxComponent } from "@/types/textboxComponent";
 
 const controller = "tracker";
 
@@ -17,13 +16,7 @@ export const trackerRepo = {
     const res = await api.get<TrackerType>(
       `${controller}/${id}?isDeployed=${isDeployed}`,
     );
-    const tracker: TrackerType = {
-      ...res.data,
-      components: new Map<string, TextboxComponent>(
-        Object.entries(res.data.components),
-      ),
-    };
-    return tracker;
+    return res.data;
   },
   create: async (body: { name: string; description: string }) => {
     const res = await api.post<TrackerType>(`${controller}`, body);

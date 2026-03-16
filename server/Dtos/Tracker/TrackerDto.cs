@@ -18,7 +18,7 @@ public class TrackerDto
     public bool Deploy { get; set; } = false;
 
     [Required]
-    public Dictionary<string, TextboxDto> Components { get; set; } = [];
+    public ICollection<TextboxDto> Components { get; set; } = [];
 
     [Required]
     public DateTime CreatedAt { get; set; }

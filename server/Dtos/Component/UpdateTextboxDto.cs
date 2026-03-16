@@ -15,5 +15,7 @@ public class UpdateTextboxDto
 
     public bool Required { get; set; } = false;
 
+    public string? DependsOnId { get; set; } = null;
+
     public int MaxLength { get; set; } = 20;
 }

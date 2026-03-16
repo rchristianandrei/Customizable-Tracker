@@ -19,8 +19,9 @@ export const Textbox = forwardRef<
     component: TextboxComponent;
     selected?: boolean;
     enable?: boolean;
+    dependsOn?: ComponentHandle;
   }
->(({ component, selected = false, enable = false }, ref) => {
+>(({ component, dependsOn, selected = false, enable = false }, ref) => {
   const formSchema = useMemo(
     () =>
       z.object({
@@ -51,7 +52,12 @@ export const Textbox = forwardRef<
       label: component.label,
       ...form.getValues(),
     }),
-    validate: () => form.trigger(),
+    validate: async () => {
+      if (dependsOn) {
+        if (!(await dependsOn.validate())) return false;
+      }
+      return await form.trigger();
+    },
     reset: () => form.reset(),
   }));
 

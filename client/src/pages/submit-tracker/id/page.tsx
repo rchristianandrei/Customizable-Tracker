@@ -38,7 +38,8 @@ export const AnswerTracker = () => {
 };
 
 const AnswerTrackerForm = ({ tracker }: { tracker: TrackerType }) => {
-  const { register, isFormValid, getFormValues, resetForm } = useTrackerForm();
+  const { compRefs, register, isFormValid, getFormValues, resetForm } =
+    useTrackerForm();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { isActive, elapsedTime, formatTime, startTime, resetTime } =
     useStopwatch();
@@ -99,14 +100,20 @@ const AnswerTrackerForm = ({ tracker }: { tracker: TrackerType }) => {
             e.preventDefault();
           }}
         >
-          {Array.from(tracker.components.entries()).map(([_, component]) => (
-            <Textbox
-              ref={register(component.id)}
-              key={component.id}
-              component={component}
-              enable={isActive}
-            />
-          ))}
+          {tracker.components
+            .map((component) => ({
+              component,
+              handle: register(component.id),
+            }))
+            .map(({ component, handle }) => (
+              <Textbox
+                ref={handle}
+                key={component.id}
+                component={component}
+                dependsOn={compRefs.current.get(component.dependsOn ?? "")}
+                enable={isActive}
+              />
+            ))}
         </form>
       </Tracker>
     </section>

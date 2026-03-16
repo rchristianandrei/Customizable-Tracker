@@ -8,12 +8,8 @@ public static class TrackerDtoMapper
 {
     public static TrackerDto ToDto(this Tracker tracker, bool includeComponents = false)
     {
-        var map = new Dictionary<string, TextboxDto>();
-        if (includeComponents)
-            foreach (var comp in tracker.Components)
-            {
-                map.Add(comp.Id, comp.ToDto());
-            }
+        ICollection<TextboxDto> dtos = [];
+        if (includeComponents) dtos = [.. tracker.Components.Select(c => c.ToDto())];
 
         return new TrackerDto
         {
@@ -21,7 +17,7 @@ public static class TrackerDtoMapper
             Name = tracker.Name,
             Description = tracker.Description,
             Deploy = tracker.Deploy,
-            Components = map,
+            Components = dtos,
             CreatedAt = tracker.CreatedAt
         };
     }
