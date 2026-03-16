@@ -32,6 +32,11 @@ public class SubmittedTrackerController(ISubmittedTrackerRepo _submittedRepo) : 
     [HttpPost]
     public async Task<IActionResult> Post([FromBody] CreateSubmittedTrackerDto value)
     {
+        foreach(var comp in value.Components)
+        {
+            if (String.IsNullOrWhiteSpace(comp.EncodedData)) return BadRequest("Empty Field");
+        }
+
         var tracker = new SubmittedTracker
         {
             TrackerId = value.TrackerId,

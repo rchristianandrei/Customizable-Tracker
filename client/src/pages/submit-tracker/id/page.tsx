@@ -94,7 +94,11 @@ const AnswerTrackerForm = ({ tracker }: { tracker: TrackerType }) => {
         onStartEvent={onStart}
         onSubmitEvent={onSubmit}
       >
-        <form>
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+          }}
+        >
           {tracker.components.map((component) => (
             <Textbox
               ref={register(component.id)}

@@ -61,7 +61,7 @@ namespace server.Controllers
 
             if (tracker == null) return NotFound();
             if (tracker.UserEmail != _currentUserService.Email) return Unauthorized();
-            if (tracker.Deploy != isDeployed) return BadRequest("Tracker is not deployed");
+            if(isDeployed && !tracker.Deploy) return BadRequest("Tracker is not deployed");
 
             tracker.Components = [.. tracker.Components.OrderBy(c => c.Order)];
 
