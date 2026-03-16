@@ -23,6 +23,7 @@ import { useTrackerForm } from "@/hooks/useTrackerForm";
 import type { TrackerType } from "@/types/tracker";
 import { usePreventUnload } from "@/hooks/usePreventUnload";
 import { useStopwatch } from "@/hooks/useStopwatch";
+import { useMemo } from "react";
 
 export const Preview = () => {
   const { tracker } = useEditTrackerState();
@@ -39,6 +40,11 @@ const TrackerPreview = ({ tracker }: { tracker: TrackerType }) => {
 
   const { register, resetForm } = useTrackerForm();
   const { isActive, formatTime, startTime, resetTime } = useStopwatch();
+
+  const components = useMemo(
+    () => Array.from(tracker.components.entries()).map((c) => c[1]),
+    [tracker.components],
+  );
 
   usePreventUnload(isActive);
 
@@ -62,7 +68,7 @@ const TrackerPreview = ({ tracker }: { tracker: TrackerType }) => {
       >
         {tracker.components && (
           <Sortable
-            value={tracker.components}
+            value={components}
             onValueChange={setComponents}
             onDragStart={(event) =>
               setSelectedComponent(String(event.active.id))
@@ -71,7 +77,7 @@ const TrackerPreview = ({ tracker }: { tracker: TrackerType }) => {
           >
             <SortableContent asChild>
               <div>
-                {tracker.components.map((component) => (
+                {components.map((component) => (
                   <SortableItem key={component.id} value={component.id} asChild>
                     <div className="flex items-center">
                       {showSettings && (

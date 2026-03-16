@@ -99,7 +99,7 @@ const AnswerTrackerForm = ({ tracker }: { tracker: TrackerType }) => {
             e.preventDefault();
           }}
         >
-          {tracker.components.map((component) => (
+          {Array.from(tracker.components.entries()).map(([_, component]) => (
             <Textbox
               ref={register(component.id)}
               key={component.id}
