@@ -46,7 +46,11 @@ export const Textbox = forwardRef<
   });
 
   useImperativeHandle(ref, () => ({
-    getValues: () => form.getValues(),
+    getValues: () => ({
+      id: component.id,
+      label: component.label,
+      ...form.getValues(),
+    }),
     validate: () => form.trigger(),
     reset: () => form.reset(),
   }));
