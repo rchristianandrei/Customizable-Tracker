@@ -19,18 +19,26 @@ namespace server.Controllers
     ) : ControllerBase
     {
         [HttpGet]
-        public async Task<IActionResult> Get([FromQuery] PaginatedQueryParameters dto)
+        public async Task<IActionResult> Get([FromQuery] PaginatedQueryParameters dto, [FromQuery] bool isDeployed)
         {
             var builder = Builders<Tracker>.Filter;
             var userFilter = builder.Eq(t => t.UserEmail, _currentUserService.Email);
             var searchFilter = builder.Empty;
+            var isDeployedFilter = builder.Empty;
+
             if (!string.IsNullOrWhiteSpace(dto.Query))
             {
                 var nameFilter = builder.Regex(t => t.Name, new BsonRegularExpression(dto.Query, "i"));
                 var descFilter = builder.Regex(t => t.Description, new BsonRegularExpression(dto.Query, "i"));
                 searchFilter = builder.Or(nameFilter, descFilter);
             }
-            var combinedFilter = builder.And(userFilter, searchFilter);
+
+            if (isDeployed)
+            {
+                isDeployedFilter = builder.Eq(t => t.Deploy, isDeployed);
+            }
+
+            var combinedFilter = builder.And(userFilter, searchFilter, isDeployedFilter);
 
             var trackers = await _trackerRepo.GetAll(combinedFilter, dto);
             var totalCount = (await _trackerRepo.GetAll(combinedFilter)).Count();
@@ -86,6 +94,7 @@ namespace server.Controllers
             tracker.Name = dto.Name;
             tracker.Description = dto.Description;
             tracker.LastUpdated = DateTime.UtcNow;
+            tracker.Deploy = dto.Deploy;
 
             int orderIndex = 0;
             var components = dto.Components.Select(c =>

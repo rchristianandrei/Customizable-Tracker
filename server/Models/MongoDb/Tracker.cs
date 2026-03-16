@@ -18,6 +18,8 @@ public class Tracker : IEntity
     [MaxLength(30)]
     public string Description { get; set; } = string.Empty;
 
+    public bool Deploy { get; set; } = false;
+
     public string UserEmail { get; set; } = string.Empty;
 
     public ICollection<TextboxComponent> Components { get; set; } = [];

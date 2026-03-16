@@ -15,6 +15,9 @@ public class TrackerDto
     public string Description { get; set; } = string.Empty;
 
     [Required]
+    public bool Deploy { get; set; } = false;
+
+    [Required]
     public ICollection<TextboxDto> Components { get; set; } = [];
 
     [Required]

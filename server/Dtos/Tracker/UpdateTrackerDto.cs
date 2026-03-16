@@ -14,5 +14,8 @@ public class UpdateTrackerDto
     [MaxLength(30)]
     public string Description { get; set; } = string.Empty;
 
+    [Required]
+    public bool Deploy { get; set; } = false;
+
     public List<UpdateTextboxDto> Components { get; set; } = [];
 }

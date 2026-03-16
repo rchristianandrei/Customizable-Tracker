@@ -15,6 +15,7 @@ public static class TrackerDtoMapper
             Id = tracker.Id!,
             Name = tracker.Name,
             Description = tracker.Description,
+            Deploy = tracker.Deploy,
             Components = components,
             CreatedAt = tracker.CreatedAt
         };

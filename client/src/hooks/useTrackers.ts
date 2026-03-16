@@ -5,7 +5,11 @@ import type { TrackerType } from "@/types/tracker";
 import { useCallback, useMemo, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 
-export const useTrackers = () => {
+export const useTrackers = ({
+  isDeployed = false,
+}: {
+  isDeployed: boolean;
+}) => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
 
@@ -27,9 +31,12 @@ export const useTrackers = () => {
     setLoading(true);
     try {
       const params = queryParams;
-      const trackers = await trackerRepo.getMine({
-        ...params,
-      });
+      const trackers = await trackerRepo.getMine(
+        {
+          ...params,
+        },
+        isDeployed,
+      );
       setTrackers(trackers);
     } catch (error: any) {
       console.log(error);

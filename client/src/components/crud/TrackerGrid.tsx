@@ -9,6 +9,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 
 import type { TrackerType } from "@/types/tracker";
 
@@ -45,6 +46,7 @@ export const TrackerGrid = ({
 
                 {renderActions?.(tracker)}
               </div>
+              {tracker.deploy && <Badge>Deployed</Badge>}
             </CardHeader>
 
             <CardContent className="flex items-center justify-between">

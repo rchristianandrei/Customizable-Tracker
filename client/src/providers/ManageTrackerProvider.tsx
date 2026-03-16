@@ -24,8 +24,10 @@ export const TrackersContext = createContext<
 
 export const TrackersProvider = ({
   children,
+  isTrackerDeployed = false,
 }: {
   children: React.ReactNode;
+  isTrackerDeployed?: boolean;
 }) => {
   const location = useLocation();
 
@@ -37,7 +39,7 @@ export const TrackersProvider = ({
     loadTrackers,
     createTracker,
     deleteTracker,
-  } = useTrackers();
+  } = useTrackers({ isDeployed: isTrackerDeployed });
 
   useEffect(() => {
     loadTrackers();

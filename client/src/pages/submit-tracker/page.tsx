@@ -5,7 +5,7 @@ import { TrackersProvider } from "@/providers/ManageTrackerProvider";
 export const SubtmitTracker = () => {
   return (
     <RootLayout featureName="Submit Tracker">
-      <TrackersProvider>
+      <TrackersProvider isTrackerDeployed={true}>
         <CrudPage></CrudPage>
       </TrackersProvider>
     </RootLayout>

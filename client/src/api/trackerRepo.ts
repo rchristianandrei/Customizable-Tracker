@@ -6,9 +6,9 @@ import type { QueryParams } from "@/types/params";
 const controller = "tracker";
 
 export const trackerRepo = {
-  getMine: async (params: QueryParams) => {
+  getMine: async (params: QueryParams, isDeployed: boolean = false) => {
     const res = await api.get<PaginatedData<TrackerType>>(
-      `${controller}?query=${params.query}&page=${params.page}&pageSize=${params.pageSize}`,
+      `${controller}?query=${params.query}&page=${params.page}&pageSize=${params.pageSize}&isDeployed=${isDeployed}`,
     );
     return res.data;
   },

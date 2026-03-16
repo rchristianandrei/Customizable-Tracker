@@ -47,6 +47,7 @@ export const useEditTracker = (): {
     defaultValues: {
       name: "",
       description: "",
+      deploy: false,
     },
   });
 
@@ -65,6 +66,7 @@ export const useEditTracker = (): {
 
       trackerForm.setValue("name", tracker.name);
       trackerForm.setValue("description", tracker.description);
+      trackerForm.setValue("deploy", tracker.deploy);
 
       trackerWatchRef.current = trackerForm.watch((value) => {
         setTracker((t) => {
@@ -73,6 +75,7 @@ export const useEditTracker = (): {
             ...t,
             ...(value.name && { name: value.name.trim() }),
             ...(value.description && { description: value.description.trim() }),
+            deploy: value.deploy ?? false,
           };
         });
       });

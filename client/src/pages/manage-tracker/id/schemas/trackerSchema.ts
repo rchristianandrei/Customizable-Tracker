@@ -20,4 +20,5 @@ export const TrackerSchema = () =>
       .max(30, {
         message: "must be at most 30 characters",
       }),
+    deploy: z.boolean(),
   });
