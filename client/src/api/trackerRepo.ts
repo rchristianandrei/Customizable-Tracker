@@ -12,8 +12,10 @@ export const trackerRepo = {
     );
     return res.data;
   },
-  getById: async (id: string) => {
-    const res = await api.get<TrackerType>(`${controller}/${id}`);
+  getById: async (id: string, isDeployed: boolean = false) => {
+    const res = await api.get<TrackerType>(
+      `${controller}/${id}?isDeployed=${isDeployed}`,
+    );
     return res.data;
   },
   create: async (body: { name: string; description: string }) => {

@@ -1,4 +1,5 @@
-﻿using MongoDB.Driver;
+﻿using MongoDB.Bson;
+using MongoDB.Driver;
 using server.Interfaces;
 using System.Linq.Expressions;
 
@@ -23,8 +24,9 @@ public abstract class MongoRepo<T>(IMongoDatabase database, string collectionNam
         return await (await entities.FindAsync(filter)).ToListAsync();
     }
 
-    public async Task<T> GetById(string id)
+    public async Task<T?> GetById(string id)
     {
+        if (!ObjectId.TryParse(id, out var objectId)) return default;
         return await (await entities.FindAsync(T => T.Id == id)).FirstOrDefaultAsync();
     }
 

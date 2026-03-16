@@ -19,9 +19,14 @@ export const AnswerTracker = () => {
   useEffect(() => {
     const loadTracker = async (id: string) => {
       setLoading(true);
-      const tracker = await trackerRepo.getById(id);
-      setTracker(tracker);
-      setLoading(false);
+      try {
+        const tracker = await trackerRepo.getById(id, true);
+        setTracker(tracker);
+      } catch (error) {
+        toast.error("Unable to load the tracker");
+      } finally {
+        setLoading(false);
+      }
     };
     loadTracker(id ?? "");
   }, []);

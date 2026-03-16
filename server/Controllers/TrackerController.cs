@@ -19,7 +19,7 @@ namespace server.Controllers
     ) : ControllerBase
     {
         [HttpGet]
-        public async Task<IActionResult> Get([FromQuery] PaginatedQueryParameters dto, [FromQuery] bool isDeployed)
+        public async Task<IActionResult> Get([FromQuery] PaginatedQueryParameters dto, [FromQuery] bool isDeployed = false)
         {
             var builder = Builders<Tracker>.Filter;
             var userFilter = builder.Eq(t => t.UserEmail, _currentUserService.Email);
@@ -55,12 +55,13 @@ namespace server.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> Get(string id)
+        public async Task<IActionResult> Get(string id, [FromQuery] bool isDeployed = false)
         {
             var tracker = await _trackerRepo.GetById(id);
 
             if (tracker == null) return NotFound();
             if (tracker.UserEmail != _currentUserService.Email) return Unauthorized();
+            if (tracker.Deploy != isDeployed) return BadRequest("Tracker is not deployed");
 
             tracker.Components = [.. tracker.Components.OrderBy(c => c.Order)];
 
