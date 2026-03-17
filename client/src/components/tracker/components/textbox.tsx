@@ -9,7 +9,13 @@ import { cn } from "@/lib/utils";
 import type { ComponentHandle } from "@/types/trackerTypes/component-handle";
 import type { TextboxComponent } from "@/types/textboxComponent";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { forwardRef, useImperativeHandle, useMemo } from "react";
+import {
+  forwardRef,
+  useEffect,
+  useImperativeHandle,
+  useMemo,
+  useState,
+} from "react";
 import { Controller, useForm } from "react-hook-form";
 import z from "zod";
 
@@ -27,7 +33,7 @@ export const Textbox = forwardRef<
       z.object({
         value: z
           .string()
-          .min(1, {
+          .min(component.required ? 1 : 0, {
             message: "field is required",
           })
           .max(
@@ -61,6 +67,25 @@ export const Textbox = forwardRef<
     reset: () => form.reset(),
   }));
 
+  const [isCompEnabled, setIsCompEnabled] = useState(enable);
+
+  useEffect(() => {
+    const checkValidation = async () => {
+      if (!enable) {
+        setIsCompEnabled(false);
+        return;
+      }
+
+      if (dependsOn) {
+        setIsCompEnabled(await dependsOn.validate());
+        return;
+      }
+
+      setIsCompEnabled(true);
+    };
+    checkValidation();
+  }, [enable, dependsOn]);
+
   return (
     <FieldGroup
       className={cn(
@@ -83,7 +108,7 @@ export const Textbox = forwardRef<
               aria-invalid={fieldState.invalid}
               placeholder={component.placeholder}
               autoComplete="on"
-              disabled={!enable}
+              disabled={!isCompEnabled}
               maxLength={component.maxLength}
             />
             {fieldState.invalid && <FieldError errors={[fieldState.error]} />}

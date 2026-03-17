@@ -110,7 +110,7 @@ const AnswerTrackerForm = ({ tracker }: { tracker: TrackerType }) => {
                 ref={handle}
                 key={component.id}
                 component={component}
-                dependsOn={compRefs.current.get(component.dependsOn ?? "")}
+                dependsOn={compRefs.current.get(component.dependsOnId ?? "")}
                 enable={isActive}
               />
             ))}

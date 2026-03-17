@@ -107,6 +107,7 @@ namespace server.Controllers
                     Placeholder = c.Placeholder,
                     Required = c.Required,
                     Order = orderIndex + 1,
+                    DependsOnId = c.DependsOnId,
                     MaxLength = c.MaxLength
                 };
             }).ToList();

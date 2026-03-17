@@ -3,6 +3,6 @@ export type TextboxComponent = {
   label: string;
   placeholder: string;
   required: boolean;
-  dependsOn?: string;
+  dependsOnId?: string;
   maxLength: number;
 };

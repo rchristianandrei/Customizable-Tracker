@@ -41,6 +41,12 @@ export const useEditTracker = (): {
     return tracker.components.find((c) => c.id === selectedComponentId) ?? null;
   }, [tracker?.components, selectedComponentId]);
 
+  const mappedComponents = useMemo(() => {
+    return new Map<string, TextboxComponent>(
+      tracker?.components.map((c) => [c.id, c]) ?? [],
+    );
+  }, [tracker?.components]);
+
   const trackerForm = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     mode: "onChange",
@@ -167,6 +173,7 @@ export const useEditTracker = (): {
       textboxForm.setValue("placeholder", component.placeholder);
       textboxForm.setValue("required", component.required);
       textboxForm.setValue("maxLength", component.maxLength);
+      textboxForm.setValue("dependsOn", component.dependsOnId ?? "");
 
       textboxWatchRef.current = textboxForm.watch((values) => {
         setTracker((t) => {
@@ -181,6 +188,7 @@ export const useEditTracker = (): {
                 placeholder: values.placeholder?.trim() ?? "",
                 required: values.required ?? false,
                 ...(values.maxLength && { maxLength: values.maxLength }),
+                dependsOnId: values.dependsOn ?? "",
               };
             }),
           };
@@ -193,6 +201,7 @@ export const useEditTracker = (): {
     state: useMemo(
       () => ({
         tracker,
+        mappedComponents,
         selectedComponent,
         loading,
         showSettings,

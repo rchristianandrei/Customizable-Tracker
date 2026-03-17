@@ -9,7 +9,10 @@ namespace server.Controllers;
 [Authorize]
 [Route("api/[controller]")]
 [ApiController]
-public class SubmittedTrackerController(ISubmittedTrackerRepo _submittedRepo) : ControllerBase
+public class SubmittedTrackerController(
+    ITrackerRepo _trackerRepo,
+    ISubmittedTrackerRepo _submittedRepo
+    ) : ControllerBase
 {
     [HttpGet("{trackerId}")]
     public async Task<IActionResult> Get(
@@ -32,18 +35,23 @@ public class SubmittedTrackerController(ISubmittedTrackerRepo _submittedRepo) : 
     [HttpPost]
     public async Task<IActionResult> Post([FromBody] CreateSubmittedTrackerDto value)
     {
+        var tracker = await _trackerRepo.GetById(value.TrackerId);
+        if (tracker == null) return NotFound("Tracker not found");
+
         foreach(var comp in value.Components)
         {
-            if (String.IsNullOrWhiteSpace(comp.EncodedData)) return BadRequest("Empty Field");
+            var component = tracker.Components.FirstOrDefault(c => c.Id == comp.Id);
+            if (component == null) continue;
+            if (component.Required && String.IsNullOrWhiteSpace(comp.EncodedData)) return BadRequest("Empty Field");
         }
 
-        var tracker = new SubmittedTracker
+        var submit = new SubmittedTracker
         {
             TrackerId = value.TrackerId,
             TrackerName = value.TrackerName,
             Components = value.Components
         };
-        await _submittedRepo.Create(tracker);
-        return Ok(tracker);
+        await _submittedRepo.Create(submit);
+        return Ok(submit);
     }
 }

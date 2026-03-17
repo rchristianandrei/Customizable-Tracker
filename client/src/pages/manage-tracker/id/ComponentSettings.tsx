@@ -9,10 +9,22 @@ import { useEditTrackerState } from "./context/useEditTrackerProviders";
 import { Controller } from "react-hook-form";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
+import {
+  Combobox,
+  ComboboxContent,
+  ComboboxInput,
+  ComboboxItem,
+  ComboboxList,
+} from "@/components/ui/combobox";
 
 export const ComponentSettings = ({ className }: { className?: string }) => {
-  const { selectedComponent, showSettings, textboxForm } =
-    useEditTrackerState();
+  const {
+    tracker,
+    mappedComponents,
+    selectedComponent,
+    showSettings,
+    textboxForm,
+  } = useEditTrackerState();
 
   if (!selectedComponent || !showSettings) return null;
 
@@ -21,7 +33,7 @@ export const ComponentSettings = ({ className }: { className?: string }) => {
       <h2 className="text-center text-lg font-semibold">Component Settings</h2>
       <div className="flex-1 overflow-auto flex flex-col gap-3 px-1">
         {/* Label */}
-        <FieldGroup className="">
+        <FieldGroup>
           <Controller
             name={`label`}
             control={textboxForm.control}
@@ -43,7 +55,7 @@ export const ComponentSettings = ({ className }: { className?: string }) => {
         </FieldGroup>
 
         {/* Placeholder */}
-        <FieldGroup className="">
+        <FieldGroup>
           <Controller
             name={`placeholder`}
             control={textboxForm.control}
@@ -70,25 +82,20 @@ export const ComponentSettings = ({ className }: { className?: string }) => {
             name={`required`}
             control={textboxForm.control}
             render={({ field, fieldState }) => (
-              <Field>
-                <Field
-                  orientation="horizontal"
-                  data-invalid={fieldState.invalid}
+              <Field orientation="horizontal" data-invalid={fieldState.invalid}>
+                <FieldLabel
+                  htmlFor={field.name}
+                  className="text-sm leading-none"
                 >
-                  <FieldLabel
-                    htmlFor={field.name}
-                    className="text-sm leading-none"
-                  >
-                    Required
-                  </FieldLabel>
-                  <Checkbox
-                    id={field.name}
-                    name={field.name}
-                    aria-invalid={fieldState.invalid}
-                    checked={field.value}
-                    onCheckedChange={(checked) => field.onChange(checked)}
-                  />
-                </Field>
+                  Required
+                </FieldLabel>
+                <Checkbox
+                  id={field.name}
+                  name={field.name}
+                  aria-invalid={fieldState.invalid}
+                  checked={field.value}
+                  onCheckedChange={(checked) => field.onChange(checked)}
+                />
                 {fieldState.invalid && (
                   <FieldError errors={[fieldState.error]} />
                 )}
@@ -97,8 +104,62 @@ export const ComponentSettings = ({ className }: { className?: string }) => {
           />
         </FieldGroup>
 
+        {/* Depends On */}
+        <FieldGroup>
+          <Controller
+            name="dependsOn"
+            control={textboxForm.control}
+            render={({ field, fieldState }) => {
+              const selectedLabel = mappedComponents.get(field.value)?.label;
+
+              return (
+                <Field orientation="vertical" data-invalid={fieldState.invalid}>
+                  <FieldLabel
+                    htmlFor={field.name}
+                    className="text-sm leading-none"
+                  >
+                    Depends On
+                  </FieldLabel>
+
+                  <Combobox
+                    value={field.value}
+                    onValueChange={(value) =>
+                      field.onChange(value === "None" ? "" : value)
+                    }
+                  >
+                    <ComboboxInput
+                      value={selectedLabel ?? ""}
+                      placeholder="Select a component"
+                      className="px-1"
+                      readOnly
+                    />
+
+                    <ComboboxContent>
+                      <ComboboxList>
+                        <ComboboxItem value="None">None</ComboboxItem>
+
+                        {tracker?.components
+                          .filter((c) => c.id !== selectedComponent.id)
+                          .map((item) => (
+                            <ComboboxItem key={item.id} value={item.id}>
+                              {item.label}
+                            </ComboboxItem>
+                          ))}
+                      </ComboboxList>
+                    </ComboboxContent>
+                  </Combobox>
+
+                  {fieldState.invalid && (
+                    <FieldError errors={[fieldState.error]} />
+                  )}
+                </Field>
+              );
+            }}
+          />
+        </FieldGroup>
+
         {/* Max Length */}
-        <FieldGroup className="">
+        <FieldGroup>
           <Controller
             name={`maxLength`}
             control={textboxForm.control}

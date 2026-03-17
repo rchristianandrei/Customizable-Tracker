@@ -18,4 +18,5 @@ export const TextboxComponentSchema = () =>
       .number()
       .min(1, { message: "min 1" })
       .max(20, { message: "max 20" }),
+    dependsOn: z.string(),
   });

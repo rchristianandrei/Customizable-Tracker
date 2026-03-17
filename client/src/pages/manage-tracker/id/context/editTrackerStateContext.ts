@@ -7,6 +7,7 @@ import type { TextboxComponentValues } from "../schemas/textboxComponentSchema";
 
 export type EditTrackerState = {
   tracker: TrackerType | null;
+  mappedComponents: Map<string, TextboxComponent>;
   selectedComponent: TextboxComponent | null;
   loading: {
     state: boolean;
