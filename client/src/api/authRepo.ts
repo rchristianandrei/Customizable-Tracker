@@ -21,4 +21,8 @@ export const authRepo = {
     const res = await api.get<User>(`${controller}/me`);
     return res.data;
   },
+  logout: async () => {
+    const res = await api.post(`${controller}/logout`);
+    return res.data;
+  },
 };

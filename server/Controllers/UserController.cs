@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using server.Data;
 using server.Dtos.Auth;
 using server.Models;
+using server.Models.MySql;
 using server.Services;
 
 namespace server.Controllers;

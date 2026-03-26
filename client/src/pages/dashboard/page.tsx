@@ -1,12 +1,11 @@
-import { Button } from "@/components/ui/button";
-import { useAuth } from "@/contexts/AuthProvider";
+import { RootLayout } from "@/components/layout/rootLayout/page";
 
 export const Dashboard = () => {
-  const { user } = useAuth();
   return (
-    <>
-      <div>Dashboard for {user?.email}</div>
-      <Button>Click me</Button>
-    </>
+    <RootLayout featureName="Dashboard">
+      <div className="w-full h-full flex justify-center items-center font-bold text-9xl">
+        WIP
+      </div>
+    </RootLayout>
   );
 };

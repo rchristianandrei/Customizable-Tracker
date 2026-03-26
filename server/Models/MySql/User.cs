@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace server.Models;
+namespace server.Models.MySql;
 
 public class User
 {
@@ -19,4 +19,7 @@ public class User
 
     [Required]
     public string PasswordHash { get; set; } = string.Empty;
+
+    [Required]
+    public DateTime AddedAt { get; set; }
 }

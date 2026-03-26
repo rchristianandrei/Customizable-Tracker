@@ -3,21 +3,26 @@ using Microsoft.EntityFrameworkCore;
 using server.Data;
 using server.Extensions;
 using server.Interfaces;
-using server.Models;
+using server.Models.MySql;
 using server.Services;
 
 DotNetEnv.Env.Load();
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Mongo Db
+builder.Services.AddMongoDb(builder.Configuration);
+
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
 builder.Services.AddJwt(builder.Configuration);
 
-builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
+builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseMySql(connectionString, Microsoft.EntityFrameworkCore.ServerVersion.AutoDetect(connectionString)));
 
+builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
-builder.Services.AddScoped<AuthService>();
+builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<ICurrentUserService,CurrentUserService>();
 builder.Services.AddScoped<IJwtService, JwtService>();
 
 // CORS

@@ -1,0 +1,36 @@
+import type { TrackerType } from "@/types/tracker";
+import { api } from "./axios";
+import type { PaginatedData } from "@/types/paginatedData";
+import type { QueryParams } from "@/types/params";
+
+const controller = "tracker";
+
+export const trackerRepo = {
+  getMine: async (params: QueryParams, isDeployed: boolean = false) => {
+    const res = await api.get<PaginatedData<TrackerType>>(
+      `${controller}?query=${params.query}&page=${params.page}&pageSize=${params.pageSize}&isDeployed=${isDeployed}`,
+    );
+    return res.data;
+  },
+  getById: async (id: string, isDeployed: boolean = false) => {
+    const res = await api.get<TrackerType>(
+      `${controller}/${id}?isDeployed=${isDeployed}`,
+    );
+    return res.data;
+  },
+  create: async (body: { name: string; description: string }) => {
+    const res = await api.post<TrackerType>(`${controller}`, body);
+    return res.data;
+  },
+  update: async (tracker: TrackerType) => {
+    const res = await api.put<TrackerType>(
+      `${controller}/${tracker.id}`,
+      tracker,
+    );
+    return res.data;
+  },
+  delete: async (id: string) => {
+    const res = await api.delete(`${controller}/${id}`);
+    return res.data;
+  },
+};

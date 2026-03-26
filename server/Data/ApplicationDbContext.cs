@@ -1,11 +1,12 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using server.Models;
+using server.Models.MySql;
 
 namespace server.Data;
 
 public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : DbContext(options)
 {
     public DbSet<User> Users { get; set; }
+
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
