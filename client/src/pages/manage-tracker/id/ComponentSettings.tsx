@@ -16,6 +16,8 @@ import {
   ComboboxItem,
   ComboboxList,
 } from "@/components/ui/combobox";
+import { useCallback } from "react";
+import type { TextboxComponent } from "@/types/textboxComponent";
 
 export const ComponentSettings = ({ className }: { className?: string }) => {
   const {
@@ -27,6 +29,17 @@ export const ComponentSettings = ({ className }: { className?: string }) => {
   } = useEditTrackerState();
 
   if (!selectedComponent || !showSettings) return null;
+
+  const isNotALoop = useCallback(
+    (from: TextboxComponent, to?: TextboxComponent) => {
+      if (!to) return true;
+
+      if (from.id === to.id) return false;
+
+      return isNotALoop(from, mappedComponents.get(to.dependsOnId ?? ""));
+    },
+    [mappedComponents],
+  );
 
   return (
     <form className={cn("flex flex-col gap-1", className)}>
@@ -139,7 +152,11 @@ export const ComponentSettings = ({ className }: { className?: string }) => {
                         <ComboboxItem value="None">None</ComboboxItem>
 
                         {tracker?.components
-                          .filter((c) => c.id !== selectedComponent.id)
+                          .filter(
+                            (c) =>
+                              c.id !== selectedComponent.id &&
+                              isNotALoop(selectedComponent, c),
+                          )
                           .map((item) => (
                             <ComboboxItem key={item.id} value={item.id}>
                               {item.label}
